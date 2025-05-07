@@ -1,10 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:multimodule/reusables/constants.dart';
+import 'package:multimodule/reusables/keepAlive.dart';
 
-class CommonLayout extends StatelessWidget {
+class CommonLayout extends StatefulWidget {
   final Map<String , Widget> modMenus;
   const CommonLayout({super.key,required this.modMenus});
+
+  @override
+  State<CommonLayout> createState() => _CommonLayoutState();
+}
+
+class _CommonLayoutState extends State<CommonLayout>{
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("adding to the main of selected module ${sidebarController.selectedModule.value}");
+
+      // sidebarController.selectedSubModuleKey.value.isEmpty ?
+      sidebarController.addSubModule({
+        "Dash": Text('This is the dashboard an replicate it for all modules'),
+      });// : Text('not going null');
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -12,61 +34,35 @@ class CommonLayout extends StatelessWidget {
       body: Row(
         children: [
           Column(
-            children: modMenus.entries.map((item)=>InkWell(
+            // children: widget.modMenus.entries.map((item)=>InkWell(
+            children: widget.modMenus.entries.map((item)=>InkWell(
                 onTap: (){
-                  // print(item.runtimeType);
-                  // print(sidebarController.selectedModule);
-                  sidebarController.addModule(sidebarController.selectedModule.value,{item.key:item.value});
-                  print(sidebarController.moduleMenus);
+                  sidebarController.addSubModule({item.key : item.value});
                 },
                 child: Text('${item.key}'))).toList(),
           ),
-          Expanded(
+          Obx(() => Expanded(
             child: Column(
               children: [
-                Obx(() => Column(
-                  children: [
-                    Text("${sidebarController.moduleMenus[sidebarController.selectedModule.value]}" )?? SizedBox(),
-                    // Text("${sidebarController.selectedsubScreen.value}" )?? SizedBox(),
-                  ],
-                )),
-
-                /*Obx(()=> Row(
+                Container(
+                  color: Colors.blue,
+                  child: Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          color: Colors.blue,
-                          child: Row(
-                            children: [
-                              ...List.generate(sidebarController.moduleMenus[sidebarController.selectedModule.value]!.keys.length, (index) {
-                                var submoduleName = sidebarController.moduleMenus[sidebarController.selectedModule.value]!.keys.elementAt(index);
-                                var submoduleNameValue = sidebarController.moduleMenus[sidebarController.selectedModule.value]!.values.elementAt(index);
-                                return InkWell(
-                                  onTap: (){
-                                    sidebarController.addModule(sidebarController.selectedModule.value, {submoduleName:submoduleNameValue});
-                        
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.only(left: 12),
-                                    child: Text('${submoduleName}'),
-                                  ),
-                                );
-                              })
-                            ],
-                          ),
-                          // child: Text('All current menus go here'),
-                        ),
-                      ),
+                      ...sidebarController.moduleMenus.firstWhere((module) => module.containsKey(sidebarController.selectedModule.value))[sidebarController.selectedModule.value]!.entries.skip(1).map((entry) =>InkWell(
+                          onTap: (){
+
+                            sidebarController.addSubModule({entry.key:entry.value});
+
+                          },
+                          child: Text('${entry.key}'))).toList()
                     ],
                   ),
-                ),*/
-                Expanded(
-                  // child: Obx(()=> sidebarController.selectedScreen.value ?? Text('')?? Text('${sidebarController.selectedModule}')),
-                  child: Obx(() =>Text('${sidebarController.selectedsubScreen.value}')),
-                )
+                ),
+                Expanded(child: KeepPageAlive(child: sidebarController.getCurrentWidget(),))
+
               ],
             ),
-          ),
+          ),)
         ],
       ),
 

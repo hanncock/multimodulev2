@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../commonLayout.dart';
+import '../../reusables/constants.dart';
 
 Map<String, Widget> menus ={
-  "Dash":Text('accounts Dashboard'),
-  "Local":Text('accnts local'),
-  "Welcome":Text('acc Welcome'),
+  // "Dash":Text('accounts Dashboard'),
+  "COA":Text('${sidebarController.selectedModule.value}, COA'),
+  "Invoices":Text('${sidebarController.selectedModule.value}, Invoices'),
 };
 
 class Accounting extends StatelessWidget {

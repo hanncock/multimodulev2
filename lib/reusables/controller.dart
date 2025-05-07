@@ -3,11 +3,138 @@ import 'package:get/get.dart';
 import '../allmodules.dart';
 
 
+
 class Controller extends GetxController with GetTickerProviderStateMixin{
 
-  final selectedModule = ''.obs;
-  final selectedScreen = Rx<Widget?>(null);
-  final selectedsubScreen = Rx<Widget?>(null);
+
+  RxList<Map<String, Map<String, Widget>>> moduleMenus = <Map<String, Map<String, Widget>>>[
+    {'AllModules':{"Module Dash" : MainModules()}},
+  ].obs;
+
+  RxList<Map<String, Map<String, Widget>>> lastSelectedSubMenus = <Map<String, Map<String, Widget>>>[
+  ].obs;
+
+
+
+  var selectedModule = ''.obs;
+  var selectedScreen = Rx<Widget?>(null);
+  var selectedSubModuleKey = ''.obs;
+
+
+  late TabController tabController;
+
+  @override
+  void onInit(){
+    super.onInit();
+
+    if(moduleMenus.isNotEmpty){
+      selectedModule.value = moduleMenus[0].keys.first;
+      selectedSubModuleKey.value = moduleMenus[0][selectedModule.value]!.keys.first;
+      selectedScreen.value = moduleMenus[0][selectedModule.value]![selectedSubModuleKey.value];
+      lastSelectedSubMenus.add({selectedModule.value : {selectedSubModuleKey.value : selectedScreen.value!} });
+
+      print("last selected ${lastSelectedSubMenus}");
+      _initializeTabController();
+
+    }
+
+    ever(moduleMenus, (_) {
+      _initializeTabController();
+    });
+
+  }
+
+  void _initializeTabController() {
+    // Initialize the tabController only when moduleMenus is not empty
+    if (moduleMenus.isNotEmpty) {
+      tabController = TabController(length: moduleMenus.length, vsync: this);
+    }
+  }
+
+
+
+  void addMainModule(String moduleName, [Map<String ,Widget>? submodules]){
+    print("before adding ${moduleMenus}");
+
+    bool exists = moduleMenus.any((module) => module.containsKey(moduleName));
+
+    if(!exists && submodules!= null && submodules.isNotEmpty){
+      moduleMenus.add({moduleName : submodules});
+
+      selectedModule.value = moduleName;
+      selectedScreen.value = submodules.values.first;
+      lastSelectedSubMenus.add({moduleName:submodules});
+
+    }else{
+
+      selectedModule.value= moduleName;
+      selectedScreen.value = moduleMenus[moduleMenus.indexWhere((elem)=> elem.containsKey(moduleName))][selectedModule.value]!.values.first;
+      bool exists = lastSelectedSubMenus.any((module) => module.containsKey(moduleName));
+      if(exists){
+        int index = lastSelectedSubMenus.indexWhere((elem)=> elem.containsKey(moduleName));
+        print(lastSelectedSubMenus[index][selectedModule.value]!.values.first);
+        selectedSubModuleKey.value = lastSelectedSubMenus[index][selectedModule.value]!.keys.first;
+      }
+
+    }
+    print("after adding ${moduleMenus}");
+
+    print("the selected module is${selectedModule.value}");
+  }
+
+
+  void addSubModule(Map<String ,Widget> submodules){
+
+
+    print("module is ${submodules.keys}");
+
+    int index = moduleMenus.indexWhere((elem)=> elem.containsKey(selectedModule.value));
+
+    Map<String, Widget> existingSubmodules = moduleMenus[index][selectedModule.value]!;
+
+    int indexed = lastSelectedSubMenus.indexWhere((elem)=> elem.containsKey(selectedModule.value));
+
+
+    if(!existingSubmodules.containsKey(submodules.keys.first)){
+      existingSubmodules[submodules.keys.first] = submodules.values.first;
+      moduleMenus[index] = {selectedModule.value : existingSubmodules};
+      lastSelectedSubMenus[indexed][selectedModule.value] = submodules;
+    }else{
+
+      // selectedSubModuleKey.value = submodules.keys.first;
+
+    }
+
+    selectedSubModuleKey.value = submodules.keys.first;
+
+  }
+
+
+  Widget getCurrentWidget(){
+
+    int index = moduleMenus.indexWhere((elem) => elem.containsKey(selectedModule.value));
+    return moduleMenus[index][selectedModule.value]![selectedSubModuleKey.value] ?? Text('no data to show');
+
+  }
+
+
+}
+
+
+
+
+/*
+class Controller extends GetxController with GetTickerProviderStateMixin{
+
+  var selectedModule = ''.obs;
+  var selectedScreen = Rx<Widget?>(null);
+  // final selectedsubScreen = Rx<Widget?>(null);
+
+  // Widget selectedScreen = Container();
+  // Widget selectedSubScreen = Container(child: Text('Sub screen'),);
+  var selectedSubScreenKey = ''.obs;
+
+  final lastSelectedSubMenus = <String, Map<String, Widget>>{}.obs; // moduleName -> submenuKey
 
 
   final moduleMenus = <String, Map<String, Widget>>{
@@ -27,8 +154,9 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
       final firstScreen = moduleMenus[firstModule]!.keys.first;
 
       selectedModule.value = firstModule;
-      selectedScreen.value = moduleMenus[firstModule]![firstScreen];
-
+      selectedScreen.value = moduleMenus[firstModule]![firstScreen]!;
+      // selectedSubScreenKey.value = moduleMenus[moduleMenus.keys.first]!.keys.first;
+      // print("initial screen is ${ moduleMenus[moduleMenus.keys.first]!.keys.first}");
       _initializeTabController();
     }
 
@@ -47,41 +175,113 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
     }
   }
 
-  void addModule(String moduleName, [Map<String, Widget>? screen] ){
+
+
+  // void addModule(String moduleName, [Map<String, Widget>? screen] ){
+  //   if(!moduleMenus.containsKey(moduleName)){
+  //     print("not containing module");
+  //     selectedModule.value = moduleName;
+  //     moduleMenus[moduleName] = screen!;
+  //     if(screen.isNotEmpty){
+  //       selectedScreen.value = screen.values.first;
+  //       selectedsubScreen.value = screen.values.first;
+  //       lastSelectedSubMenus[moduleName] = screen;
+  //     }else{
+  //
+  //       // selectedsubScreen.value = moduleMenus[moduleName]!.values.first;
+  //       selectedsubScreen.value = lastSelectedSubMenus[moduleName]!.values.first;
+  //       // lastSelectedSubMenus
+  //     }
+  //     print("upated to ${lastSelectedSubMenus}");
+  //
+  //   }else{
+  //     print("contains module thus switching to it");
+  //     selectedModule.value = moduleName;
+  //     selectedScreen.value = moduleMenus[moduleName]!.values.first;
+  //     print("current saved is  ${lastSelectedSubMenus}");
+  //     if(screen == null || screen.isEmpty){
+  //       selectedsubScreen.value = lastSelectedSubMenus[moduleName]!.values.first;
+  //       // selectedsubScreen.value = moduleMenus[moduleName]!.values.first;
+  //     }else{
+  //       if(!moduleMenus[moduleName]!.containsKey(screen.keys.first)){
+  //         print("not containing submenu");
+  //         // moduleMenus[moduleName] = screen!;
+  //         final updatedMap = Map<String, Widget>.from(moduleMenus[moduleName]!);
+  //         updatedMap.addAll({screen.keys.first: screen.values.first});
+  //         moduleMenus[moduleName] = updatedMap;
+  //         selectedsubScreen.value = screen.values.first;
+  //
+  //         lastSelectedSubMenus[moduleName] = screen;
+  //
+  //       }else{
+  //         // selectedsubScreen.value = lastSelectedSubMenus[moduleName]!.values.first;
+  //         selectedsubScreen.value = screen.values.first;
+  //         lastSelectedSubMenus[moduleName] = screen;
+  //       }
+  //     }
+  //
+  //
+  //   }
+  // }
+
+
+  void addMainMoodule(String moduleName, [Map<String, Widget>? screns]){
+    print("current modules ${moduleMenus}");
     if(!moduleMenus.containsKey(moduleName)){
-      print("not containing module");
+      print("not containing module adding it");
+      moduleMenus[moduleName] = screns!;
       selectedModule.value = moduleName;
-      moduleMenus[moduleName] = screen!;
-      if(screen.isNotEmpty){
-        selectedScreen.value = screen.values.first;
-        selectedsubScreen.value = screen.values.first;
-      }else{
-        selectedsubScreen.value = moduleMenus[moduleName]!.values.first;
-      }
+      // selectedSubScreenKey.value = screns.keys.first;
+
+      // selectedScreen.value = screns.values.first;
+      selectedScreen.value = screns.values.first;
+      lastSelectedSubMenus[moduleName] = screns;
+      // print("selected submainscreen is ${screns.values.first}");
+      // selectedSubScreenKey.value = screns.keys.first;
 
     }else{
-      print("contains menu thus switching to it");
+      print('contains the module');
       selectedModule.value = moduleName;
-      selectedScreen.value = moduleMenus[moduleName]!.values.first;
-      if(screen == null || screen.isEmpty){
-        selectedsubScreen.value = moduleMenus[moduleName]!.values.first;
+      print("current last screens on switching is ${lastSelectedSubMenus[moduleName]}");
+
+      if(lastSelectedSubMenus[moduleName] != null){
+        selectedScreen.value = moduleMenus[moduleName]!.values.first;
+
       }else{
-        if(!moduleMenus[moduleName]!.containsKey(screen.keys.first)){
-          print("not containing submenu");
-          // moduleMenus[moduleName] = screen!;
-          moduleMenus[moduleName]!.addAll({screen.keys.first : screen.values.first});
-
-          selectedsubScreen.value = screen.values.first;
-        }else{
-          selectedsubScreen.value = screen.values.first;
-        }
+        selectedScreen.value = moduleMenus[moduleName]!.values.first;
       }
-
-
     }
+    // addSubModule(screns!);
+    // getCurrentWidget();
   }
 
+  void addSubModule(Map<String, Widget> submodule){
+    print("selected submodule key is ${selectedSubScreenKey}");
+    if(!moduleMenus[selectedModule.value]!.containsKey(submodule.keys.first)){
+      selectedSubScreenKey.value = submodule.keys.first;
+      moduleMenus[selectedModule.value]![submodule.keys.first] = submodule.values.first;
+      lastSelectedSubMenus[selectedModule.value] = submodule;
+      print("after adding ${moduleMenus[selectedModule.value]}");
+      selectedSubScreenKey.value = submodule.keys.first;
 
+    }else{
+      print("submodule exists switching to it");
+      selectedSubScreenKey.value = submodule.keys.first;
+    }
+
+    // getCurrentWidget();
+  }
+
+  Widget getCurrentWidget(){
+
+    // return (selectedSubScreenKey.isEmpty || selectedSubScreenKey.isNull) ? moduleMenus[selectedModule.value]!.values.first: moduleMenus[selectedModule.value]![selectedSubScreenKey.value] ?? Text('No module to show');
+
+    // return  moduleMenus[selectedModule.value]![selectedSubScreenKey.value] ?? Container();
+
+    return moduleMenus[selectedModule.value]![selectedSubScreenKey.value] ?? Text('No submodule found');
+  }
+
+*/
 /*  void addModule(String moduleName, [Map<String, Widget>? screns]) {
     if (!moduleMenus.containsKey(moduleName)) {
       if (screns == null || screns.isEmpty) {
@@ -126,10 +326,16 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
     }
 
     print("Current module menus: $moduleMenus");
-  }*/
+  }*//*
 
 
-/*void addModule(String moduleName, *//*Map<String, Widget>screns*//*[Map<String, Widget>? screns]) {
+
+*/
+/*void addModule(String moduleName, *//*
+*/
+/*Map<String, Widget>screns*//*
+*/
+/*[Map<String, Widget>? screns]) {
     if (!moduleMenus.containsKey(moduleName)) {
       moduleMenus[moduleName] = screns!;
       print('newly added module ${moduleName}');
@@ -157,6 +363,7 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
 
     print("these are the ${moduleMenus}");
 
-  }*/
+  }*//*
 
-}
+
+}*/

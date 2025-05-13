@@ -5,8 +5,8 @@ import '../../reusables/constants.dart';
 
 Map<String, Widget> menus ={
   // "Dash":Text('accounts Dashboard'),
-  "COA":Text('${sidebarController.selectedModule.value}, COA'),
-  "Invoices":Text('${sidebarController.selectedModule.value}, Invoices'),
+  // "COA":Text('${sidebarController.selectedModule.value}, COA'),
+  // "Invoices":Text('${sidebarController.selectedModule.value}, Invoices'),
 };
 
 class Accounting extends StatelessWidget {
@@ -14,6 +14,6 @@ class Accounting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CommonLayout(modMenus: menus,);
+    return CommonLayout(modMenus: menus,tagline: 'Accounts',);
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:multimodule/allmodules.dart';
-import 'package:multimodule/homepage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +21,9 @@ class MyApp extends StatelessWidget {
       ),
       // home:HomePage(),
       home:Allmodules(),
+      // home:AllHm2(),
+      // home:AllHmes(),
+      // home:AllHmes3(),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

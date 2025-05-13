@@ -8,7 +8,7 @@ int desktopScreenSize = 1366;
 int tableScreenSize = 768;
 int mobileScreenSize = 400;
 
-Controller sidebarController = Get.put(Controller());
+// Controller sidebarController = Get.put(Controller());
 
 
 // }

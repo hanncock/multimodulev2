@@ -34,6 +34,7 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF1F3FF),
       body: Row(
         children: [
           // Column(
@@ -42,18 +43,22 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
           //   ],
           // ),
 
-          Container(
-            color: Colors.blue,
+          SContainer(
+
+            color: Colors.white,
             child: Column(
               // children: widget.modMenus.entries.map((item)=>InkWell(
               children: widget.modMenus.entries.map((item)=>InkWell(
                   onTap: (){
                     controller.addModule(item.key, item.value);
                   },
-                  child: Text('${item.key}'))).toList(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${item.key}'),
+                  ))).toList(),
             ),
           ),
-
+          SizedBox(width: 5,),
           GetBuilder<Controller>(
               tag: "${widget.tagline}",
               builder: (controller) {
@@ -103,16 +108,20 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
 
                 return Expanded(
                   child: Column(children: [
-                    SContainer(
-                      color:Colors.blue.withOpacity(0.5),
-                      child: Row(
-                        children: [
-                          ...controller.mainModules.keys.map((elmKey)=>InkWell(
-                              onTap: (){
-                                controller.switchTo(elmKey);
-                              },
-                              child: Text('${elmKey}'))).toList(),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SContainer(
+                        // color:Color(0xFF6C63FF),
+                        color:Color(0xFFF1F3FF),
+                        child: Row(
+                          children: [
+                            ...controller.mainModules.keys.map((elmKey)=>InkWell(
+                                onTap: (){
+                                  controller.switchTo(elmKey);
+                                },
+                                child: Text('${elmKey}'))).toList(),
+                          ],
+                        ),
                       ),
                     ),
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:multimodule/modules/school/trialInput.dart';
-import 'package:multimodule/reusables/constants.dart';
 import 'package:multimodule/reusables/controller.dart';
 
 import '../../commonLayout.dart';
+import '../../homepage.dart';
 
 Map<String, Widget> menus ={
   "Students":Column(
@@ -14,12 +14,7 @@ Map<String, Widget> menus ={
     ],
   ),
   "Students":TrailInput(),
-  "Teachers":Column(
-    children: [
-      Text('Teachers'),
-      TrailInput()
-    ],
-  ),
+  "Dashbbb":Dekstop(),
 };
 
 class SchoolScreen extends StatefulWidget {

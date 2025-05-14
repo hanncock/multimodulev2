@@ -6,6 +6,7 @@ import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/constants.dart';
 import 'package:multimodule/reusables/controller.dart';
 import 'package:multimodule/reusables/keepAlive.dart';
+import 'homepage.dart';
 import 'modules/school/schooldash.dart';
 import 'modules/school/trialInput.dart';
 
@@ -22,15 +23,10 @@ class Menus{
   
 }
 
-Map<String, Widget> menus ={
-  "Students":TrailInput(),
-  // "Teachers":Text('${controller.selectedModule.value} Teachers'),
-};
-
 List<Menus> menusListed = [
   Menus(icona: Icon(Icons.school, size: 40), title: 'School', widget: SchoolScreen()),
   Menus(icona: Icon(Icons.house, size: 40), title: 'Home', widget: Text('Home')),
-  Menus(icona: Icon(Icons.house, size: 40), title: 'Account', widget: Accounting()),
+  Menus(icona: Icon(Icons.house, size: 40), title: 'Account', widget: Dekstop()),
 ];
 
 class Allmodules extends StatefulWidget {
@@ -60,6 +56,31 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /*bottomNavigationBar: Container(
+        height:30,
+        // margin: EdgeInsets.only(left: 24,),
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.blueGrey.withOpacity(0.8),
+          borderRadius: BorderRadius.all(Radius.circular(5))
+        ),
+        width: MediaQuery.of(context).size.width* 0.2,
+        child: Row(
+          children: List.generate(5, (index)=>Icon(Icons.abc)),
+        ),
+        // child: TabBar(
+        //   controller: tabController,
+        //   labelColor: Colors.white,
+        //   unselectedLabelColor: Colors.white70,
+        //   indicatorColor: Colors.white,
+        //   tabs: [
+        //     Tab(icon: Icon(Icons.dashboard), text: "Dashboard"),
+        //     // Tab(icon: Icon(Icons.file_copy), text: "My Batches"),
+        //     // Tab(icon: Icon(Icons.people), text: "BAs"),
+        //     // Tab(icon: Icon(Icons.category_sharp), text: "BA Assigned"),
+        //   ],
+        // ),
+      ),*/
       body: Column(
         children: [
 
@@ -111,22 +132,9 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
 
 
                 return Expanded(
-                  child: Row(children: [
+                  child: Column(children: [
 
-                    SContainer(
-                      color:Colors.green,
-                      child: Column(
-                        children: [
-                          ...controller.mainModules.keys.map((elmKey)=>InkWell(
-                              onTap: (){
 
-                                print("switching");
-                                controller.switchTo(elmKey);
-                              },
-                              child: Text('${elmKey}'))).toList(),
-                        ],
-                      ),
-                    ),
                     Expanded(
                       child: TabBarView(
                         controller: tabController,
@@ -137,7 +145,43 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                           return KeepPageAlive(child: firstWidget);
                         }).toList(),),
                     ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            color: Color(0xFFA0A7D6),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  
+                                    children: [
+                                      ...controller.mainModules.keys.map((elmKey)=>InkWell(
+                                          onTap: (){
+                                  
+                                            print("switching");
+                                            controller.switchTo(elmKey);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text('${elmKey}',style: TextStyle(color: Colors.white),),
+                                          ))).toList(),
+                                  
+                                    ],
+                                  ),
+                                ),
+                                Icon(Icons.settings,color: Colors.white,),
+                                SizedBox()
 
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
 
                   ],),
@@ -166,6 +210,7 @@ class MainModules extends StatelessWidget {
               controller.addModule(module.title ,module.widget);
             },
             child: SContainer(
+              color: Colors.white,
               child: Row(
                 children: [
                   module.icona,

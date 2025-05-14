@@ -25,9 +25,13 @@ class _SContainerState extends State<SContainer> {
     return Container(
       height: widget.height,
       width: widget.width,
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: widget.color,
-        borderRadius: BorderRadius.circular(widget.borderRadius ?? 10)
+        borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
+        ],
       ),
       child: widget.child,
     );

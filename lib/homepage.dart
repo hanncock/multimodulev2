@@ -49,35 +49,107 @@ class Dekstop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: SContainer(
-                height: 450,
-                color: Colors.blue.withOpacity(0.2),
-                child: Center(child: Text('Box 1'),),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: SContainer(
+                  height: 450,
+                  color: Colors.blue.withOpacity(0.2),
+                  child: Center(child: Text('Box 1'),),
+                ),
               ),
-            ),
-            SizedBox(width: 20,),
-            Expanded(
-              flex: 2,
-              child: Column(
+              SizedBox(width: 20,),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    SContainer(
+                      width: double.infinity,
+                      height: 215,
+                      color: Colors.yellow.withOpacity(0.2),
+                      child: Center(child: Text('Box 2'),),
+                    ),
+                    SizedBox(height: 20,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SContainer(
+                            height:190,
+                            color: Colors.red.withOpacity(0.2),
+                            child: Center(child: Text('Box 3'),),
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child: SContainer(
+                            height:190,
+                          
+                            color: Colors.red.withOpacity(0.2),
+                            child: Center(child: Text('Box 4'),),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10,),
+          Row(
+            children: [
+              Expanded(
+                child: SContainer(
+                  height:190,
+                  color: Colors.red.withOpacity(0.2),
+                  child: Center(child: Text('Box 5'),),
+                ),
+              ),
+              SizedBox(width: 20,),
+              Expanded(
+                child: SContainer(
+                  height:190,
+      
+                  color: Colors.red.withOpacity(0.2),
+                  child: Center(child: Text('Box 6'),),
+                ),
+              )
+            ],
+          )
+        ],
+        /*children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: SContainer(
+                  // width: double.infinity,
+                  // height: double.maxFinite,
+                  height: 450,
+                  color: Colors.blue.withOpacity(0.2),
+                  child: Center(child: Text("Box 1")),
+                ),
+              ),
+              SizedBox(width: 20,),
+              Column(
                 children: [
-                  SContainer(
-                    width: double.infinity,
-                    height: 215,
-                    color: Colors.yellow.withOpacity(0.2),
-                    child: Center(child: Text('Box 2'),),
-                  ),
-                  SizedBox(height: 20,),
+                  // SContainer(
+                  //   width: double.infinity,
+                  //   height: 215,
+                  //   color: Colors.orange.withOpacity(0.2),
+                  //   child: Center(child: Text("Box 2")),
+                  // ),
+                  SizedBox(height: 10,),
                   Row(
                     children: [
                       Expanded(
                         child: SContainer(
-                          height:190,
+                          height: 190,
+                          width: double.infinity,
                           color: Colors.red.withOpacity(0.2),
                           child: Center(child: Text('Box 3'),),
                         ),
@@ -85,118 +157,48 @@ class Dekstop extends StatelessWidget {
                       SizedBox(width: 20,),
                       Expanded(
                         child: SContainer(
-                          height:190,
-                        
-                          color: Colors.red.withOpacity(0.2),
+                          height: 190,
+                          width: double.infinity,
+                          color: Colors.green.withOpacity(0.2),
                           child: Center(child: Text('Box 4'),),
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10,),
-        Row(
-          children: [
-            Expanded(
-              child: SContainer(
-                height:190,
+              SizedBox(width: 20,),
+              SContainer(
+                height: 190,
+                width: double.infinity,
                 color: Colors.red.withOpacity(0.2),
                 child: Center(child: Text('Box 5'),),
               ),
-            ),
-            SizedBox(width: 20,),
-            Expanded(
-              child: SContainer(
-                height:190,
-
+      
+      
+            ],
+          ),
+          SizedBox(height: 20,),
+          *//*Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SContainer(
+                height: 190,
+                width: double.infinity,
+                color: Colors.red.withOpacity(0.2),
+                child: Center(child: Text('Box 5'),),
+              ),
+              SizedBox(height: 20,),
+              SContainer(
+                height: 190,
+                width: double.infinity,
                 color: Colors.red.withOpacity(0.2),
                 child: Center(child: Text('Box 6'),),
               ),
-            )
-          ],
-        )
-      ],
-      /*children: [
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: SContainer(
-                // width: double.infinity,
-                // height: double.maxFinite,
-                height: 450,
-                color: Colors.blue.withOpacity(0.2),
-                child: Center(child: Text("Box 1")),
-              ),
-            ),
-            SizedBox(width: 20,),
-            Column(
-              children: [
-                // SContainer(
-                //   width: double.infinity,
-                //   height: 215,
-                //   color: Colors.orange.withOpacity(0.2),
-                //   child: Center(child: Text("Box 2")),
-                // ),
-                SizedBox(height: 10,),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SContainer(
-                        height: 190,
-                        width: double.infinity,
-                        color: Colors.red.withOpacity(0.2),
-                        child: Center(child: Text('Box 3'),),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-                    Expanded(
-                      child: SContainer(
-                        height: 190,
-                        width: double.infinity,
-                        color: Colors.green.withOpacity(0.2),
-                        child: Center(child: Text('Box 4'),),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(width: 20,),
-            SContainer(
-              height: 190,
-              width: double.infinity,
-              color: Colors.red.withOpacity(0.2),
-              child: Center(child: Text('Box 5'),),
-            ),
-
-
-          ],
-        ),
-        SizedBox(height: 20,),
-        *//*Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SContainer(
-              height: 190,
-              width: double.infinity,
-              color: Colors.red.withOpacity(0.2),
-              child: Center(child: Text('Box 5'),),
-            ),
-            SizedBox(height: 20,),
-            SContainer(
-              height: 190,
-              width: double.infinity,
-              color: Colors.red.withOpacity(0.2),
-              child: Center(child: Text('Box 6'),),
-            ),
-          ],
-        )*//*
-      ],*/
+            ],
+          )*//*
+        ],*/
+      ),
     );
   }
 }

@@ -19,7 +19,6 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
       mainModules[moduleName] = module;
       update();
       switchTo(moduleName);
-
     }
 
   }

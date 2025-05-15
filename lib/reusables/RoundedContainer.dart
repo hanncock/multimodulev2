@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class SContainer extends StatefulWidget {
   final double? height;
+  final double? margin;
   final double? width;
   final Color? color;
   final Widget? child;
@@ -9,6 +10,7 @@ class SContainer extends StatefulWidget {
   const SContainer({
     super.key,
     this.height,
+    this.margin,
     this.width,
     this.color,
     this.child,
@@ -25,6 +27,7 @@ class _SContainerState extends State<SContainer> {
     return Container(
       height: widget.height,
       width: widget.width,
+      margin: EdgeInsets.all(widget.margin ?? 1),
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: widget.color,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multimodule/allmodules.dart';
 
 void main() {
@@ -18,7 +19,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme, // This will apply Manrope globally to all text styles
+        ),
+
       ),
+
       // home:HomePage(),
       home:Allmodules(),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),

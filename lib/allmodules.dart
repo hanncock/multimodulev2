@@ -5,8 +5,13 @@ import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/controller.dart';
 import 'package:multimodule/reusables/keepAlive.dart';
 import 'package:multimodule/reusables/menu.dart';
+import 'package:multimodule/willdell/dell2.dart';
+import 'package:multimodule/willdell/formtester.dart';
+import 'package:multimodule/willdell/newformtrial.dart';
 import 'homepage.dart';
 import 'modules/school/schooldash.dart';
+import 'modules/settings/SettingDash.dart';
+import 'modules/settings/companySetup.dart';
 
 
 
@@ -18,6 +23,10 @@ List<Menus> menusListed = [
 
   Menus(imagePath: "teacher", title: 'School', widget: SchoolScreen()),
   Menus(imagePath: "bank", title: 'Account', widget: Dekstop()),
+  // Menus(imagePath: "bank", title: 'Form', widget: Formtester()),
+  Menus(imagePath: "bank", title: 'Form', widget: DynamicFormScreen()),
+  Menus(imagePath: "bank", title: 'Add new ', widget: Newformtrial()),
+  Menus(imagePath: "bank", title: 'Setup ', widget: Settingdash()),
 ];
 
 class Allmodules extends StatefulWidget {

@@ -76,8 +76,9 @@ class _FormbuilderState extends State<Formbuilder> {
 
 Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String, dynamic> formData){
 
+  final String key = formSchema.keys.first;
 
-  final field = formSchema["fields"].firstWhere(
+  final field = formSchema[key].firstWhere(
           (field) => field['label'].toLowerCase() == fieldKey.toLowerCase(),
       orElse: () => <String, Object>{}
   );

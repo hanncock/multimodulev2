@@ -44,7 +44,8 @@ class _CompanySetupState extends State<CompanySetup> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildField("Company Name", formSchema, _formData),
+              // Text('${formSchema}'),
+              buildField("CompanyName", formSchema, _formData),
               Row(
                 children: [
                   buildField("Reg No", formSchema, _formData),
@@ -73,6 +74,7 @@ class _CompanySetupState extends State<CompanySetup> {
                   buildField("Phone", formSchema, _formData),
                 ],
               ),
+              buildField("Position", formSchema, _formData),
 
 
               Row(
@@ -101,3 +103,5 @@ class _CompanySetupState extends State<CompanySetup> {
     );
   }
 }
+
+

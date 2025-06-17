@@ -41,6 +41,7 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
         children: [
 
           SContainer(
+            height: MediaQuery.of(context).size.height * 0.8,
             width: 200,
             color: Colors.white,
             child: SingleChildScrollView(
@@ -52,7 +53,7 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
                    controller.addModule(item.title, item.widget);
                  },
                  leading: SvgPicture.asset("assets/icons/${item.imagePath}",color: Colors.black,),
-                 title: Text("${item.title}",style: TextStyle(color: Colors.black,fontSize: 14),),
+                 title: Text("${item.title}",style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.bold),),
                )).toList(),
                /* children: widget.modMenus.entries.map((item)=>InkWell(
                     onTap: (){

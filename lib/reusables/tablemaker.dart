@@ -5,12 +5,14 @@ class CustomTable extends StatefulWidget {
   final List formDataList;
   final int fixedColumnCount;
   final int rowsPerPage;
+  final Function(Map<String, dynamic> selectedRow)? onRowSelect;
 
   const CustomTable({
     required this.headers,
     required this.formDataList,
     this.fixedColumnCount = 1,
-    this.rowsPerPage = 10,
+    this.rowsPerPage = 20,
+    this.onRowSelect,
     super.key,
   });
 
@@ -100,7 +102,19 @@ class _CustomTableState extends State<CustomTable> {
                                 setState(() {
                                   selectedRowIndex = globalIndex;
                                 });
+
+                                if (widget.onRowSelect != null) {
+                                  widget.onRowSelect!(row); // Pass selected row data
+                                }
                               },
+                              // onDoubleTap: (){
+                              //   if (widget.onRowSelect != null) {
+                              //     widget.onRowSelect!(row); // Pass selected row data
+                              //   }
+                              //
+                              //   print("will be switching to selected scree");
+                              //
+                              // },
                               child: Row(
                                 children: fixedHeaders.map((key) {
                                   final value = row[key] ?? '';
@@ -122,7 +136,7 @@ class _CustomTableState extends State<CustomTable> {
                           }).toList(),
                         ),
                       ),
-                    ),
+                     ),
                   ],
                 ),
 
@@ -166,6 +180,18 @@ class _CustomTableState extends State<CustomTable> {
                                       selectedRowIndex = globalIndex;
                                     });
                                   },
+
+                                  onDoubleTap: (){
+                                    if (widget.onRowSelect != null) {
+                                      widget.onRowSelect!(row); // Pass selected row data
+                                    }
+
+
+                                    // if()
+
+
+                                  },
+
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.start,

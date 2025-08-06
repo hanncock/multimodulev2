@@ -28,4 +28,14 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
     update();
   }
 
+  void removeTab(String elmKey){
+
+    if(mainModules.containsKey(elmKey)){
+      mainModules.remove(elmKey);
+    }else{}
+    update();
+
+
+  }
+
 }

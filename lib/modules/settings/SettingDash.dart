@@ -11,7 +11,7 @@ import 'companys.dart';
 
 List<Menus> menus = [
   Menus(imagePath: "people.svg", title: 'Companys', widget: Companies()),
-  Menus(imagePath: "people.svg", title: 'Company Setup', widget: CompanySetup()),
+  // Menus(imagePath: "people.svg", title: 'Company Setup', widget: CompanySetup()),
   // Menus(imagePath: "people.svg", title: 'Company AS', widget: MyTablePage()),
   // Menus(imagePath: "airdrop.svg", title: 'Teachers', widget: Text('StudentsListr')),
   // Menus(imagePath: "exam.svg", title: 'Examination', widget: TrailInput()),

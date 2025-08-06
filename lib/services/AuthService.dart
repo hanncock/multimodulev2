@@ -16,6 +16,7 @@ class AuthService{
   };
 
   saveMany(val,endpoint)async{
+
     var all = '${url}${endpoint}';
     var send = jsonEncode(val);
     var response = await http.post(Uri.parse(all), body: send, headers: headers);
@@ -30,7 +31,7 @@ class AuthService{
     try{
       var response =  await get(Uri.parse(fetchedData));
       var jsondata = jsonDecode(response.body);
-      print("here are the fetched${jsondata}");
+      // print("here are the fetched${jsondata}");
 
       return jsondata['data'];
       // return jsondata;

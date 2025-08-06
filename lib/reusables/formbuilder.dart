@@ -92,27 +92,33 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
   final String label = field['label'];
   final String placeholder = field['placeholder'] ?? '';
   final bool required = field['required'] ?? false;
-  // final String jsonKey = field['jsonKey'];
+  final String jsonKey = field['name'] ?? label;
   // final String fieldKey = field['key'];
 
   switch(type){
     // case "text":
-    case ("text" || "string"):
-    // case "string":
+    case "text":
+    case "string":
     case "email":
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-                width: 120,
-                child: Text("${fieldKey}\t:",style: TextStyle(fontWeight: FontWeight.w600,letterSpacing: 0.5),)),
+                width: 150,
+                child: Text("${fieldKey}\t",style: TextStyle(fontWeight: FontWeight.w600,letterSpacing: 0.5,fontSize: 12),)),
             SizedBox(height: 5,),
-            SizedBox(
-              width: 350,
-              height: 40,// Width for 2-column layout
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: 100,  // Minimum width the child should take
+                maxWidth: 600,
+                maxHeight: 40// Maximum width allowed (or use double.infinity if allowed by parent)
+              ),
+              // width: 250,
+              // height: 40,// Width for 2-column layout
               child: TextFormField(
+                initialValue: formData[jsonKey]?.toString() ?? '',
                 decoration: InputDecoration(
                   labelText: label,
                   hintText: placeholder,

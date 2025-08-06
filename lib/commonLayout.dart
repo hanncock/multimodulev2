@@ -48,14 +48,14 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
               scrollDirection: Axis.vertical,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-               children: widget.modMenus.map((item)=>ListTile(
-                 onTap: (){
-                   controller.addModule(item.title, item.widget);
-                 },
-                 leading: SvgPicture.asset("assets/icons/${item.imagePath}",color: Colors.black,),
-                 title: Text("${item.title}",style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.bold),),
-               )).toList(),
-               /* children: widget.modMenus.entries.map((item)=>InkWell(
+                children: widget.modMenus.map((item)=>ListTile(
+                  onTap: (){
+                    controller.addModule(item.title, item.widget);
+                  },
+                  leading: SvgPicture.asset("assets/icons/${item.imagePath}",color: Colors.black,),
+                  title: Text("${item.title}",style: TextStyle(color: Colors.black,fontSize: 12,fontWeight: FontWeight.bold),),
+                )).toList(),
+                /* children: widget.modMenus.entries.map((item)=>InkWell(
                     onTap: (){
                       controller.addModule(item.key, item.value);
                     },
@@ -117,32 +117,204 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
                 return Expanded(
                   child: Column(children: [
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 15),
                       child: SContainer(
                         // color:Color(0xFF6C63FF),
                         color:Color(0xFFF1F3FF),
                         child: SingleChildScrollView(
-                         scrollDirection: Axis.horizontal,
+                          scrollDirection: Axis.horizontal,
                           child: IntrinsicHeight(
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                ...controller.mainModules.keys.map((elmKey)=>Row(
-                                  children: [
-                                    InkWell(
-                                        onTap: (){
-                                          controller.switchTo(elmKey);
-                                        },
-                                        child: Text('${elmKey}')),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                      child: VerticalDivider(thickness: 1,color: Colors.red,),
-                                    )
-                                  ],
+                                ...controller.mainModules.keys.map((elmKey)=>Container(
+
+                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: controller.selectedModule.value == elmKey
+                                        ? Colors.blueAccent.withOpacity(0.2)
+                                        : Colors.white.withOpacity(0.5),
+
+
+                                    borderRadius: BorderRadius.circular(4),
+                                    // border: Border.all(
+                                    //   color: controller.selectedModule.value == elmKey
+                                    //       ? Colors.blue
+                                    //       : Colors.grey.shade400,
+                                    // ),
+
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: controller.selectedModule.value == elmKey
+                                            ? Colors.blueAccent
+                                            : Colors.transparent,
+                                        width: 1,
+                                      ),
+                                      right: BorderSide(
+                                        color: controller.selectedModule.value == elmKey
+                                            ? Colors.blueAccent
+                                            : Colors.transparent,
+                                        width: 1,
+                                      ),
+                                    ),
+
+
+
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 20.0),
+                                        child: InkWell(
+                                            onTap: (){
+                                              controller.switchTo(elmKey);
+                                            },
+                                            child: Text('${elmKey}',style: TextStyle(fontSize: 12),)),
+                                      ),
+                                      elmKey=='Dashboard' ? Text('') :Transform.translate(
+                                        offset: const Offset(0, -6), // Lift the icon upward
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            controller.removeTab(elmKey);
+                                          },
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 10, // Small size for superscript look
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                        child: VerticalDivider(thickness: 1,color: Colors.blueAccent,),
+                                      ),
+                                    ],
+                                  ),
                                 )
                                 ).toList(),
                               ],
                             ),
+
+                            // child: Row(
+                            //   mainAxisSize: MainAxisSize.max,
+                            //   children: [
+                            //     ...controller.mainModules.keys.map(
+                            //           (elmKey) => Container(
+                            //         margin: const EdgeInsets.symmetric(horizontal: 4),
+                            //         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            //         decoration: BoxDecoration(
+                            //           color: controller.selectedModule.value == elmKey
+                            //               ? Colors.blue.shade100
+                            //               : Colors.grey.shade200,
+                            //           borderRadius: BorderRadius.circular(4),
+                            //           // border: Border.all(
+                            //           //   color: controller.selectedModule.value == elmKey
+                            //           //       ? Colors.blue
+                            //           //       : Colors.grey.shade400,
+                            //           // ),
+                            //         ),
+                            //         child: Row(
+                            //           mainAxisSize: MainAxisSize.min,
+                            //           children: [
+                            //             GestureDetector(
+                            //               onTap: () {
+                            //                 controller.switchTo(elmKey);
+                            //               },
+                            //               child: Text(
+                            //                 elmKey,
+                            //                 style: const TextStyle(
+                            //                   fontWeight: FontWeight.w500,
+                            //                   color: Colors.black87,
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //             SizedBox(width: 5,),
+                            //             if (elmKey != 'Dashboard') ...[
+                            //               const SizedBox(width: 4),
+                            //               Transform.translate(
+                            //                 offset: const Offset(0, -6), // Lift the icon upward
+                            //                 child: GestureDetector(
+                            //                   onTap: () {
+                            //                     controller.removeTab(elmKey);
+                            //                   },
+                            //                   child: const Icon(
+                            //                     Icons.close,
+                            //                     size: 12, // Small size for superscript look
+                            //                     color: Colors.redAccent,
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            //             ],
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+
+
+                            /*child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                ...controller.mainModules.keys.map(
+                                      (elmKey) => Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: controller.selectedModule.value == elmKey
+                                          ? Colors.blue.shade100
+                                          : Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: controller.selectedModule.value == elmKey
+                                            ? Colors.blue
+                                            : Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            controller.switchTo(elmKey);
+                                          },
+                                          child: Text(
+                                            elmKey,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                        if (elmKey != 'Dashboard') ...[
+                                          const SizedBox(width: 6),
+                                          GestureDetector(
+                                            onTap: () {
+                                              controller.removeTab(elmKey);
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.redAccent.withOpacity(0.1),
+                                              ),
+                                              child: const Icon(
+                                                Icons.close,
+                                                size: 14,
+                                                color: Colors.redAccent,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),*/
+
                           ),
                         ),
                       ),

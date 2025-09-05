@@ -24,6 +24,15 @@ class AuthService{
     return responseData;
   }
 
+  delMany(val,endpoint)async{
+
+    var all = '${url}${endpoint}';
+    var send = jsonEncode(val);
+    var response = await http.delete(Uri.parse(all), body: send, headers: headers);
+    var responseData = jsonDecode(response.body);
+    return responseData;
+  }
+
   getvalues(endpoint)async{
     // print("getting values");
     var fetchedData = Uri.encodeFull("$url/$endpoint");

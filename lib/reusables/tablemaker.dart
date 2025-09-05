@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 
+// import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
+
+
 class CustomTable extends StatefulWidget {
+
+  // final VoidCallback? onSaved;
+  // final Function(dynamic? delcallback)? callme;
+  // final void Function(Map<String, dynamic> data)? callme;
+
+  final List<PopupMenuAction>? popupActions;
+
   final List headers;
   final List formDataList;
   final int fixedColumnCount;
@@ -13,6 +25,8 @@ class CustomTable extends StatefulWidget {
     this.fixedColumnCount = 1,
     this.rowsPerPage = 20,
     this.onRowSelect,
+    // this.onSaved,
+    this.popupActions,
     super.key,
   });
 
@@ -33,6 +47,10 @@ class _CustomTableState extends State<CustomTable> {
   void initState() {
     super.initState();
     _rowsPerPage = widget.rowsPerPage;
+
+    if (kIsWeb) {
+      html.document.onContextMenu.listen((event) => event.preventDefault());
+    }
 
     // Sync vertical scroll of fixed and scrollable columns
     _verticalScrollController.addListener(() {
@@ -74,7 +92,7 @@ class _CustomTableState extends State<CustomTable> {
                     Row(
                       children: fixedHeaders.map((header) {
                         return Container(
-                          width: 200,
+                          width: 250,
                           padding: const EdgeInsets.all(12),
                           color: Colors.blueGrey[100],
                           child: Text(
@@ -97,7 +115,55 @@ class _CustomTableState extends State<CustomTable> {
                             int globalIndex = startIndex + localIndex;
                             bool isSelected = selectedRowIndex == globalIndex;
 
-                            return InkWell(
+                            return GestureDetector(
+
+                              onDoubleTap: (){
+                                if (widget.onRowSelect != null) {
+                                  widget.onRowSelect!(row); // Pass selected row data
+                                }
+                              },
+
+                              onSecondaryTapDown: (details){
+                                showMenu(
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                  ),
+                                  items: widget.popupActions?.map((action) {
+                                    return PopupMenuItem(
+                                      child: Text(action.label),
+                                      onTap: () {
+                                        Future.delayed(Duration.zero, () {
+                                          action.onTap?.call(row);
+                                        });
+                                      },
+                                    );
+                                  }).toList() ?? [],
+                                );
+                              },
+                              child: Row(
+                            children: fixedHeaders.map((key) {
+                              final value = row[key] ?? '';
+                              return Container(
+                                width: 250,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? Colors.blue.shade50 : null,
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.grey.shade300),
+                                    right: BorderSide(color: Colors.grey.shade200),
+                                  ),
+                                ),
+                                child: Text(value.toString(),style: TextStyle(fontSize: 13),),
+                              );
+                            }).toList(),
+                            ),
+                            );
+
+                            /*return InkWell(
                               onTap: () {
                                 setState(() {
                                   selectedRowIndex = globalIndex;
@@ -119,7 +185,7 @@ class _CustomTableState extends State<CustomTable> {
                                 children: fixedHeaders.map((key) {
                                   final value = row[key] ?? '';
                                   return Container(
-                                    width: 200,
+                                    width: 250,
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
                                       color: isSelected ? Colors.blue.shade50 : null,
@@ -132,7 +198,7 @@ class _CustomTableState extends State<CustomTable> {
                                   );
                                 }).toList(),
                               ),
-                            );
+                            );*/
                           }).toList(),
                         ),
                       ),
@@ -174,7 +240,79 @@ class _CustomTableState extends State<CustomTable> {
                                 int globalIndex = startIndex + localIndex;
                                 bool isSelected = selectedRowIndex == globalIndex;
 
-                                return InkWell(
+                                return GestureDetector(
+                                  onDoubleTap: (){
+                                    if (widget.onRowSelect != null) {
+                                      widget.onRowSelect!(row); // Pass selected row data
+                                    }
+                                  },
+
+
+
+                                  onSecondaryTapDown: (details){
+                                    showMenu(
+                                      context: context,
+                                      position: RelativeRect.fromLTRB(
+                                        details.globalPosition.dx,
+                                        details.globalPosition.dy,
+                                        details.globalPosition.dx,
+                                        details.globalPosition.dy,
+                                      ),
+                                      items: widget.popupActions?.map((action) {
+                                        return PopupMenuItem(
+                                          child: Text(action.label),
+                                          onTap: () {
+                                            Future.delayed(Duration.zero, () {
+                                              action.onTap?.call(row);
+                                            });
+                                          },
+                                        );
+                                      }).toList() ?? [],
+                                    );
+                                  },
+
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    // textAlign: TextAlign.left,
+
+                                    children: scrollableHeaders.map((key) {
+                                      final value = row[key] ?? '';
+                                      return Container(
+                                          width: 200,
+                                          padding: const EdgeInsets.all(12),
+                                          alignment: Alignment.centerLeft,
+                                          decoration: BoxDecoration(
+                                              color: isSelected ? Colors.blue.shade50 : null,
+                                              border: Border(
+                                                bottom: BorderSide(color: Colors.grey.shade300),
+                                                right: BorderSide(color: Colors.grey.shade200),
+                                              )),
+                                          child: Text(
+                                            value.toString(),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                            style: const TextStyle(fontSize: 13),
+                                          )
+                                      );
+                                      /* return Container(
+                                          width: 200,
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? Colors.blue.shade50 : null,
+                                            border: Border(
+                                              bottom: BorderSide(color: Colors.grey.shade300),
+                                              right: BorderSide(color: Colors.grey.shade200),
+                                            ),
+                                          ),
+                                          child: Text(value.toString()),
+                                        );*/
+                                    }).toList(),
+                                  ),
+                                );
+
+                                /*return InkWell(
                                   onTap: () {
                                     setState(() {
                                       selectedRowIndex = globalIndex;
@@ -217,7 +355,7 @@ class _CustomTableState extends State<CustomTable> {
                                           style: const TextStyle(fontSize: 13),
                                         )
                                       );
-                                     /* return Container(
+                                     *//* return Container(
                                         width: 200,
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
@@ -228,10 +366,10 @@ class _CustomTableState extends State<CustomTable> {
                                           ),
                                         ),
                                         child: Text(value.toString()),
-                                      );*/
+                                      );*//*
                                     }).toList(),
                                   ),
-                                );
+                                );*/
                               }).toList(),
                             ),
                           ),
@@ -328,4 +466,12 @@ class _CustomTableState extends State<CustomTable> {
     _horizontalScrollController.dispose();
     super.dispose();
   }
+}
+
+
+class PopupMenuAction {
+  final String label;
+  final void Function(Map<String, dynamic> rowData)? onTap;
+
+  PopupMenuAction({required this.label, required this.onTap});
 }

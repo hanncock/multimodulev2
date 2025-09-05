@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -74,7 +75,7 @@ class _FormbuilderState extends State<Formbuilder> {
 }*/
 
 
-Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String, dynamic> formData){
+Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String, dynamic> formData, [List<dynamic>? dropdata] ){
 
   final String key = formSchema.keys.first;
 
@@ -143,6 +144,171 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
           ],
         ),
       );
+
+    case "dropdown":
+    case "select":
+      // final List<dynamic> options = field['options'] ?? [];
+      final List<dynamic> options = dropdata ?? [];
+
+  final dropdownValue = (formData[placeholder] ?? formData[jsonKey])?.toString();
+  final validValues = dropdata!.map((e) => e['value']).toSet();
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+            SizedBox(height: 5),
+
+
+            /*DropdownButtonFormField2<String>(
+              isExpanded: true,
+              // value: (formData[placeholder] ?? formData[jsonKey])?.toString() ?? '',
+              value: "",
+
+              // Match value from formData
+              // value: formData[placeholder] ?? formData[jsonKey] as String?, // assuming you're storing the "value" string
+
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+
+              // Build dropdown items from uniform map structure
+              items: dropdata!.map<DropdownMenuItem<String>>((option) {
+                return DropdownMenuItem<String>(
+                  value: option['value'], // actual value stored
+                  child: Text(option['label']), // label shown in dropdown
+                );
+              }).toList(),
+
+              onChanged: (String? value) {
+                formData[jsonKey] = value;
+              },
+
+              validator: required
+                  ? (value) {
+                if (value == null || value.isEmpty) {
+                  return '$label is required';
+                }
+                return null;
+              }
+                  : null,
+            )*/
+
+            DropdownButtonFormField2<String>(
+              isExpanded: true,
+              value: (dropdownValue != null && validValues.contains(dropdownValue))
+                  ? dropdownValue
+                  : null,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              items: dropdata!.map<DropdownMenuItem<String>>((option) {
+                return DropdownMenuItem<String>(
+                  value: option['value'],
+                  child: Text(option['label']),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                formData[jsonKey] = value;
+              },
+              validator: required
+                  ? (value) {
+                if (value == null || value.isEmpty) {
+                  return '$label is required';
+                }
+                return null;
+              }
+                  : null,
+            )
+
+
+            /*DropdownButtonFormField2<String>(
+              isExpanded: true,
+              value: formData[fieldKey] ?? formData[jsonKey] as String?,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10)),
+                // maxHeight: defaultheight*0.4,
+              ),
+              items: options.map((option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option.toString()),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                formData[jsonKey] = value;
+              },
+              validator: required
+                  ? (value) {
+                if (value == null || value.isEmpty) {
+                  return '$label is required';
+                }
+                return null;
+              }
+                  : null,
+            )*/
+          ],
+        ),
+      );
+
+
+  /*return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+            SizedBox(height: 5),
+            DropdownButtonFormField(
+              value: formData[jsonKey],
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 8),
+              ),
+              items: options.map<DropdownMenuItem>((option) {
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text(option.toString()),
+                );
+              }).toList(),
+              onChanged: (value) {
+                formData[jsonKey] = value;
+              },
+              validator: required
+                  ? (value) {
+                if (value == null) return '$label is required';
+                return null;
+              }
+                  : null,
+            ),
+          ],
+        ),
+      );*/
     default:
       return SizedBox.shrink();
   }

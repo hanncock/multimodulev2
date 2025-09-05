@@ -1,54 +1,84 @@
-void addModule(String moduleName, [Map<String, Widget>? screen]) {
-// If the module doesn't exist yet
-if (!moduleMenus.containsKey(moduleName)) {
-selectedModule.value = moduleName;
+/setup => create tables
+/apifields/{module}/{class} => get the fields
+/showclasses => get the classes/tables
+/api/{module}/{class} =>  get the data
 
-    if (screen == null || screen.isEmpty) {
-      print('No screen provided for new module: $moduleName');
-      return;
-    }
 
-    moduleMenus[moduleName] = screen;
-    final firstWidget = screen.values.first;
 
-    selectedScreen.value = firstWidget;
-    selectedsubScreen.value = firstWidget;
+case "dropdown":
+case "select":
+final List<dynamic> options = field['options'] ?? [];
 
-    print('Created new module: $moduleName');
-} else {
-// If module already exists
-selectedModule.value = moduleName;
-
-    final module = moduleMenus[moduleName]!;
-
-    if (screen == null || screen.isEmpty) {
-      // No new screen provided, use existing first one
-      final fallback = module.values.first;
-      selectedScreen.value = fallback;
-      selectedsubScreen.value = fallback;
-      print('Switched to existing module: $moduleName, sub: fallback');
-    } else {
-      final submoduleKey = screen.keys.first;
-      final submoduleWidget = screen.values.first;
-
-      if (!module.containsKey(submoduleKey)) {
-        // Add new submodule
-        module[submoduleKey] = submoduleWidget;
-        moduleMenus[moduleName] = module; // trigger reactivity if needed
-        print('Added new submodule $submoduleKey to $moduleName');
-      } else {
-        print('Submodule $submoduleKey already exists in $moduleName');
-      }
-
-      // Switch to the requested submodule
-      selectedScreen.value = submoduleWidget;
-      selectedsubScreen.value = submoduleWidget;
-
-      print('Switched to submodule: $submoduleKey in $moduleName');
-    }
+return Padding(
+padding: const EdgeInsets.all(8.0),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+SizedBox(height: 5),
+DropdownButtonFormField(
+value: formData[jsonKey],
+decoration: InputDecoration(
+border: OutlineInputBorder(),
+contentPadding: EdgeInsets.symmetric(horizontal: 8),
+),
+items: options.map<DropdownMenuItem>((option) {
+return DropdownMenuItem(
+value: option,
+child: Text(option.toString()),
+);
+}).toList(),
+onChanged: (value) {
+formData[jsonKey] = value;
+},
+validator: required
+? (value) {
+if (value == null) return '$label is required';
+return null;
 }
+: null,
+),
+],
+),
+);
 
-print('Current selectedModule: $selectedModule, selectedsubScreen: $selectedsubScreen');
+
+
+case "dropdown":
+final List<dynamic> options = field['options'] ?? [];
+
+return Padding(
+padding: const EdgeInsets.all(8.0),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+SizedBox(height: 5),
+DropdownButtonFormField(
+value: formData[jsonKey],
+decoration: InputDecoration(
+border: OutlineInputBorder(),
+contentPadding: EdgeInsets.symmetric(horizontal: 8),
+),
+items: options.map<DropdownMenuItem>((option) {
+if (option is Map) {
+return DropdownMenuItem(
+value: option['value'],
+child: Text(option['label'].toString()),
+);
 }
-# multimodulev2
-WE)}F#.C`@8p
+return DropdownMenuItem(
+value: option,
+child: Text(option.toString()),
+);
+}).toList(),
+onChanged: (value) {
+formData[jsonKey] = value;
+},
+validator: required
+? (value) => value == null ? '$label is required' : null
+: null,
+),
+],
+),
+);

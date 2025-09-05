@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:multimodule/modules/settings/Modules.dart';
 import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/formbuilder.dart';
 
@@ -28,6 +30,8 @@ class _CompanySetupState extends State<CompanySetup> {
 
   Map<String, dynamic> formSchema={};
 
+  List datalist = [];
+
 
 
   getFields()async{
@@ -38,6 +42,16 @@ class _CompanySetupState extends State<CompanySetup> {
     });
   }
 
+  getModules()async{
+    var resu = await auth.getvalues("api/setup/module/list");
+    // print("values found are ${resu}");
+    setState(() {
+      datalist= resu;
+    });
+  }
+
+
+
 
   @override
   void initState(){
@@ -46,6 +60,7 @@ class _CompanySetupState extends State<CompanySetup> {
       _formData = Map<String, dynamic>.from(widget.editingRow!);
     }
     getFields();
+    getModules();
   }
 
   @override
@@ -89,6 +104,102 @@ class _CompanySetupState extends State<CompanySetup> {
               ),
               buildField("Position", formSchema, _formData),
 
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Divider(
+                        thickness: 1,
+                        color: Colors.red,
+                      ),
+                      Text('Modules'),
+                      Divider(
+                        thickness: 1,
+                        color: Colors.red,
+                      ),
+                    ],
+                  ),
+
+                  Column(
+                    children: [
+                      Column(
+                        children: List.generate(datalist.length, (index) {
+                          final module = datalist[index];
+
+                          // Check if the module is already in _formData['modules']
+                          final isSelected = _formData['modules'].any((m) => m['module_id'] == module['module_id']);
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(module['moduleName']), // e.g., "Finance"
+
+                              IconButton(
+                                icon: Icon(
+                                  isSelected ? Icons.toggle_on : Icons.toggle_off,
+                                  color: isSelected ? Colors.green : Colors.grey,
+                                  size: 36,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    if (isSelected) {
+                                      // Remove the module if it's selected
+                                      _formData['modules'].removeWhere(
+                                            (m) => m['module_id'] == module['module_id'],
+                                      );
+                                    } else {
+                                      // Add the module if it's not selected
+                                      _formData['modules'].add({"company_id": "${_formData['company_id']}","module_id":"${module['module_id']}"});
+                                    }
+                                  });
+                                },
+                              ),
+                              /*isSelected ? Icon(Icons.toggle_on_outlined,color: Colors.green,) :
+                              Icon(Icons.toggle_off_outlined,color: Colors.grey,)*/
+                              // If already selected, show ON switch (disabled)
+                              /*if (isSelected)
+                                const Switch(value: true, onChanged: null,activeColor: Colors.green,activeThumbImage: Colors.green,)  // disabled switch
+                              else
+                                Switch(
+                                  value: false,
+                                  onChanged: (value) {
+                                    if (value) {
+                                      // Add the module to _formData['modules']
+                                      setState(() {
+                                        _formData['modules'].add(module);
+                                      });
+                                    }
+                                  },
+                                ),*/
+                            ],
+                          );
+                        }),
+                      ),
+                    ],
+                  )
+
+
+                  /*Column(
+                    children: [
+                      Text('${_formData['modules']}'),
+                      Column(
+                        children: List.generate(
+                            datalist.length,(index){
+                              return Container(
+                                child: !_formData['modules'].isEmpty  ? Text('${_formData['modules'].indexWhere((elm)=> elm['module_id'] == datalist[index]['module_id'])}') :Text('is blank')  ,
+                              );
+                          // return _formData['modules'].contains(index)? Text('found') : Text('${datalist[index]}');
+                        } ),
+                      ),
+                    ],
+                  )*/
+
+                  // Modules()
+
+                ],
+              ),
+
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -100,8 +211,10 @@ class _CompanySetupState extends State<CompanySetup> {
                           print(_formData);
                           _formKey.currentState!.save();
                           var resu = await auth.saveMany(_formData, "/api/setup/company/add");
-
-                          if(resu['data'][0]['success']){
+                          print("1 ${resu}");
+                          print("2 ${resu['data']}");
+                          print("3 ${resu['data']['success']}");
+                          if(resu['data']['success'] == true){
                             _formData.clear();
                             _formKey.currentState!.reset();
                             // formSchema.clear();
@@ -125,20 +238,7 @@ class _CompanySetupState extends State<CompanySetup> {
                           padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 50),
                           child: Text('Save',style: TextStyle(color: Colors.white),),
                         ),))
-                  // ElevatedButton(
-                  //   onPressed: () async{
-                  //     if (_formKey.currentState!.validate()) {
-                  //       _formKey.currentState!.save();
-                  //       var resu = await auth.saveMany(_formData, "/api/setup/company/add");
-                  //       print(resu);
-                  //      /* print('Form Data: $_formData');
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //         SnackBar(content: Text('Form submitted!',style: TextStyle(color: Colors.red),)),
-                  //       );*/
-                  //     }
-                  //   },
-                  //   child: Text('Submit'),
-                  // ),
+
                 ],
               ),
 

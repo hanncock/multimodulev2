@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:multimodule/Wrapper.dart';
 import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/controller.dart';
 import 'package:multimodule/reusables/keepAlive.dart';
 import 'package:multimodule/reusables/menu.dart';
-import 'package:multimodule/willdell/dell2.dart';
 import 'package:multimodule/willdell/formtester.dart';
 import 'package:multimodule/willdell/newformtrial.dart';
-import 'homepage.dart';
+import 'modules/accounts/Accnts.dart';
 import 'modules/school/schooldash.dart';
 import 'modules/settings/SettingDash.dart';
-import 'modules/settings/companySetup.dart';
 
 
 
@@ -22,7 +21,7 @@ List<Menus> menusListed = [
   // Menus(imagePath: "",  icona: Icon(Iconsax.bank, size: 40), title: 'Account', widget: Dekstop()),
 
   Menus(imagePath: "teacher", title: 'School', widget: SchoolScreen()),
-  Menus(imagePath: "bank", title: 'Account', widget: Dekstop()),
+  Menus(imagePath: "bank", title: 'Account', widget: Accounting()),
   // Menus(imagePath: "bank", title: 'Form', widget: Formtester()),
   Menus(imagePath: "bank", title: 'Form', widget: DynamicFormScreen()),
   Menus(imagePath: "bank", title: 'Add new ', widget: Newformtrial()),
@@ -63,6 +62,7 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
       bottomNavigationBar: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          Text('current company is is ${companyId}'),
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: GetBuilder<Controller>(
@@ -134,7 +134,7 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
 
                               children: [
 
-                                  PopupMenuButton(
+                                  /*PopupMenuButton(
                                     icon: Icon(Icons.more_vert_sharp),
 
                                     offset: Offset(0, -70),
@@ -150,19 +150,87 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                                     itemBuilder: (BuildContext context){
                                       return[
                                         PopupMenuItem(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('Swith Company'),
-                                                Text('Swith User'),
-                                              ],
+                                            child: InkWell(
+                                              onTap: (){
+                                                showMenu(
+                                                  context: context,
+                                                  // position: RelativeRect.fromLTRB(
+                                                  //   // details.globalPosition.dx,
+                                                  //   // details.globalPosition.dy,
+                                                  //   // details.globalPosition.dx,
+                                                  //   // details.globalPosition.dy,
+                                                  // ),
+                                                  items: Userdata[0]['companys']?.map((action) {
+                                                    return PopupMenuItem(
+                                                      child: Text(action.companyName),
+                                                      onTap: () {
+                                                        print('switching to ${action['companyId']}');
+                                                        // Future.delayed(Duration.zero, () {
+                                                        //   action.onTap?.call(row);
+                                                        // });
+                                                      },
+                                                    );
+                                                  }).toList() ?? [],
+                                                );
+                                              },
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text('Switch Company'),
+                                                ],
+                                              ),
                                             )
                                         )
                                       ];
                                     },
-                                  ),
+                                  ),*/
 
-                                  Padding(
+                                PopupMenuButton(
+                                  icon: Icon(Icons.more_vert_sharp),
+                                  offset: Offset(0, -70),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(
+                                      width: 1,
+                                      color: Colors.grey.shade200,
+                                    ),
+                                  ),
+                                  itemBuilder: (BuildContext context) {
+                                    return [
+                                      PopupMenuItem(
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.pop(context); // Close the first menu before opening the second
+                                            final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+                                            showMenu(
+                                              context: context,
+                                              position: RelativeRect.fromLTRB(
+                                                overlay.size.width - 100, // Adjust position to match your UI
+                                                100, // Adjust this Y position as needed
+                                                0,
+                                                0,
+                                              ),
+                                              items: (Userdata[0]['companys'] ?? []).map<PopupMenuEntry>((company) {
+                                                return PopupMenuItem(
+                                                  child: Text(company['companyName']),
+                                                  onTap: () {
+                                                    print('Switching to ${company['companyId']}');
+                                                    // Handle the switch logic here
+                                                  },
+                                                );
+                                              }).toList(),
+                                            );
+                                          },
+                                          child: Text('Switch Company'),
+                                        ),
+                                      ),
+                                    ];
+                                  },
+                                ),
+
+
+                                Padding(
                                     padding: const EdgeInsets.symmetric( vertical:  10.0),
                                     child: VerticalDivider(thickness: 1,),
                                   ),

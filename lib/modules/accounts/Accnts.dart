@@ -4,28 +4,15 @@ import 'package:multimodule/reusables/controller.dart';
 import '../../commonLayout.dart';
 import 'package:get/get.dart';
 import '../../reusables/menu.dart';
-
-// Map<String, Widget> menus ={
-//   "Dash":HomePage(),
-//   // "COA":Text('${sidebarController.selectedModule.value}, COA'),
-//   // "Invoices":Text('${sidebarController.selectedModule.value}, Invoices'),
-// };
-
+import 'Charges.dart';
+import 'coa.dart';
 
 List<Menus> menus = [
 
-  Menus(imagePath: "people.svg", title: 'Student', widget: Text('StudentsListr')),
-  Menus(imagePath: "airdrop.svg", title: 'Teachers', widget: Text('StudentsListr')),
-  Menus(imagePath: "exam.svg", title: 'Examination', widget: Text('StudentsListr')),
-  Menus(imagePath: "exam.svg", title: 'Grading System', widget: Text('StudentsListr')),
-  Menus(imagePath: "document.svg", title: 'Results', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Library', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Class / Year', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Stream', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Subjects / Units', widget: Text('StudentsListr')),
-  Menus(imagePath: "money.svg", title: 'Fees & Charges', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Boarding & Residency', widget: Text('StudentsListr')),
-  Menus(imagePath: "book-saved.svg", title: 'Boarding & Residency', widget: Text('StudentsListr')),
+  Menus(imagePath: "people.svg", title: 'C.O.A', widget: COA()),
+  Menus(imagePath: "airdrop.svg", title: 'Charge Packages', widget: ChargePackages()),
+  Menus(imagePath: "airdrop.svg", title: 'Payment Setup', widget: Text('Payment')),
+  Menus(imagePath: "airdrop.svg", title: 'Invoices', widget: Text('Invoices')),
 
 
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:multimodule/modules/settings/Modules.dart';
+import 'package:multimodule/modules/settings/Users.dart';
 import 'package:multimodule/modules/settings/companySetup.dart';
 
 import '../../commonLayout.dart';
@@ -11,6 +13,8 @@ import 'companys.dart';
 
 List<Menus> menus = [
   Menus(imagePath: "people.svg", title: 'Companys', widget: Companies()),
+  Menus(imagePath: "people.svg", title: 'Modules', widget: Modules()),
+  Menus(imagePath: "people.svg", title: 'Users', widget: Users()),
   // Menus(imagePath: "people.svg", title: 'Company Setup', widget: CompanySetup()),
   // Menus(imagePath: "people.svg", title: 'Company AS', widget: MyTablePage()),
   // Menus(imagePath: "airdrop.svg", title: 'Teachers', widget: Text('StudentsListr')),

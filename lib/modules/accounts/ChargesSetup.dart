@@ -27,6 +27,7 @@ class _ChargesSetupState extends State<ChargesSetup> {
 
   List dropdwnVals = [];
 
+  List postingAcc = [];
 
 
   getFields()async{
@@ -36,6 +37,23 @@ class _ChargesSetupState extends State<ChargesSetup> {
     setState(() {
       formSchema = resu;
     });
+  }
+
+  getPostingAcc()async{
+    var resu = await auth.getvalues("api/finance/coa/list?Posting=YES&companyId=${companyId}");
+    print('gotten posting fields are ');
+    print(resu);
+
+    setState(() {
+      postingAcc = resu.map((item) => {
+        'label': "${item['acccode']} ${item['accTitle']}", // or whatever field you want to show
+        'value': item['coa_id']    // or the value to save
+      }).toList();
+    });
+
+    // setState(() {
+    //   postingAcc = resu;
+    // });
   }
 
   getDrops()async{
@@ -56,6 +74,7 @@ class _ChargesSetupState extends State<ChargesSetup> {
     }
     getFields();
     getDrops();
+    getPostingAcc();
   }
 
 
@@ -71,7 +90,8 @@ class _ChargesSetupState extends State<ChargesSetup> {
             // Text('${formSchema}'),
             buildField("Acc Package Name", formSchema, _formData),
             buildField("Description", formSchema, _formData),
-            buildField("Posting Acc", formSchema, _formData),
+            buildField("Posting Acc", formSchema, _formData, postingAcc),
+            buildField("amount", formSchema, _formData,),
             /*Row(
               children: [
                 Expanded(child: buildField("Reg No", formSchema, _formData)),
@@ -137,7 +157,7 @@ class _ChargesSetupState extends State<ChargesSetup> {
                         print(_formData);
                         _formKey.currentState!.save();
                         _formData.putIfAbsent("companyId", () => companyId);
-                        // var resu = await auth.saveMany(_formData, "/api/finance/coa/add");
+                        var resu = await auth.saveMany(_formData, "/api/finance/accpackage/add");
                         //
                         // if(resu['data']['success']){
                         //   _formData.clear();

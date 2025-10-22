@@ -78,6 +78,7 @@ class _ChargePackagesState extends State<ChargePackages>{
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
+
                 ),
               ),
 
@@ -134,6 +135,8 @@ class _ChargePackagesState extends State<ChargePackages>{
                       // "module_id",
                       "accpackage_id",
                       "accpackageName",
+                      "description",
+                      "amount",
                       // "regNo",
                       // "taxPin",
                       // "postalCode",

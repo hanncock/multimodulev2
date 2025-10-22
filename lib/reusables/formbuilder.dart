@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 /*class Formbuilder extends StatefulWidget {
@@ -101,6 +102,9 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
     case "text":
     case "string":
     case "email":
+    case "int":
+
+    final isNumeric = type.toLowerCase() == 'int' || type.toLowerCase() == 'number';
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -120,6 +124,8 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
               // height: 40,// Width for 2-column layout
               child: TextFormField(
                 initialValue: formData[jsonKey]?.toString() ?? '',
+                keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+                inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
                 decoration: InputDecoration(
                   labelText: label,
                   hintText: placeholder,
@@ -134,6 +140,9 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
                   }
                   if (type == 'email' && !value.contains('@')) {
                     return 'Enter a valid email';
+                  }
+                  if (isNumeric && int.tryParse(value) == null) {
+                    return '$label must be a number';
                   }
                   return null;
                 }

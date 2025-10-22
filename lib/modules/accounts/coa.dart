@@ -45,140 +45,8 @@ class _COAState extends State<COA>{
   }
 
   @override
-  /*@override
+
   Widget build(BuildContext context) {
-    return SizedBox.expand( // Ensures full height
-      child: Column(
-        children: [
-          // Top buttons and search bar
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Add Company Button
-                ElevatedButton.icon(
-                  onPressed: () {
-                    sideContent = !sideContent;
-                    row.clear();
-                    setState(() {});
-                  },
-                  icon: Icon(Icons.add_business),
-                  label: Text('Add Company'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-
-                // Search Field
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: 'Search COA...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                      ),
-                      onChanged: (value) {
-                        // Search logic
-                      },
-                    ),
-                  ),
-                ),
-
-                // Delete Button
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Delete logic
-                  },
-                  icon: Icon(Icons.delete),
-                  label: Text('Delete'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Table + Side Content
-          Expanded( // Takes remaining screen height
-            child: Row(
-              children: [
-                // Table
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(width: 0.1),
-                    ),
-                    child: CustomTable(
-                      headers: [
-                        "accTitle",
-                        "accType",
-                      ],
-                      formDataList: accounts,
-                      onRowSelect: (selectedRow) {
-                        setState(() {
-                          sideContent = true;
-                          row = selectedRow;
-                        });
-                      },
-                      fixedColumnCount: 2,
-                    ),
-                  ),
-                ),
-
-                // Side Panel with AccSetup
-                sideContent
-                    ? SContainer(
-                  width: 550,
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      SContainer(
-                        color: Colors.blueAccent,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Account Details',
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: AccSetup(
-                          editingRow: row,
-                          onSaved: () {
-                            getcoa(); // Refresh table
-                            setState(() {
-                              sideContent = false; // Optionally close
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                    : SizedBox(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }*/
-
-Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Column(
         children: [
@@ -256,7 +124,7 @@ Widget build(BuildContext context) {
                       ],
                       formDataList: accounts,
                       onRowSelect: (selectedRow){
-            
+
                         setState(() {
                           sideContent = !sideContent;
                           row = selectedRow;
@@ -273,9 +141,9 @@ Widget build(BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SContainer(
-                            color: Colors.blueAccent,
-                            child: Center(child:  Text('Account Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
-                          ),
+                        color: Colors.blueAccent,
+                        child: Center(child:  Text('Account Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
+                      ),
                       Expanded(
                         child: AccSetup(
                           editingRow: row,

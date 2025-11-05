@@ -3,80 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-/*class Formbuilder extends StatefulWidget {
-  final Map<String, dynamic> formfieldsSchema;
-  final Map<String, dynamic> formData;
 
-  const Formbuilder({super.key,
-    required this.formfieldsSchema,
-    required this.formData
-  });
-
-  @override
-  State<Formbuilder> createState() => _FormbuilderState();
-}
-
-class _FormbuilderState extends State<Formbuilder> {
-
-  Widget _builField(String fieldKey) {
-    final field = widget.formfieldsSchema["fields"].firstWhere((field) =>
-    field['label'] == fieldKey, orElse: () => <String, Object>{}
-    );
-
-    if(field == null){
-      return SizedBox.shrink();
-    }
-
-    final String type = field['type'];
-    final String label = field['label'];
-    final String placeholder = field['placeholder'] ?? '';
-    final bool required = field['required'] ?? false;
-    // final String fieldKey = field['key'];
-
-    switch(type){
-      case "text":
-      case "email":
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: 300, // Width for 2-column layout
-            child: TextFormField(
-              decoration: InputDecoration(
-                labelText: label,
-                hintText: placeholder,
-                border: OutlineInputBorder(),
-              ),
-              validator: required
-                  ? (value) {
-                if (value == null || value.isEmpty) {
-                  return '$label is required';
-                }
-                if (type == 'email' && !value.contains('@')) {
-                  return 'Enter a valid email';
-                }
-                return null;
-              }
-                  : null,
-              onSaved: (value) => widget.formData[label] = value,
-            ),
-          ),
-        );
-      default:
-        return SizedBox.shrink();
-    }
-
-
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}*/
-
-
-Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String, dynamic> formData, [List<dynamic>? dropdata] ){
+Widget buildField(
+    String fieldKey,
+    Map<String, dynamic> formSchema,
+    Map<String, dynamic> formData,
+    [List<dynamic>? dropdata,
+      dynamic? labelKey,
+      String? valueKey,
+    ]){
 
   final String key = formSchema.keys.first;
 
@@ -114,52 +49,170 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
                 width: 150,
                 child: Text("${fieldKey}\t",style: TextStyle(fontWeight: FontWeight.w600,letterSpacing: 0.5,fontSize: 12),)),
             SizedBox(height: 5,),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 100,  // Minimum width the child should take
-                maxWidth: 600,
-                maxHeight: 40// Maximum width allowed (or use double.infinity if allowed by parent)
-              ),
-              // width: 250,
-              // height: 40,// Width for 2-column layout
-              child: TextFormField(
-                initialValue: formData[jsonKey]?.toString() ?? '',
-                keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-                inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
-                decoration: InputDecoration(
-                  labelText: label,
-                  hintText: placeholder,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.only(left: 4)
+            TextFormField(
+              initialValue: formData[jsonKey]?.toString() ?? '',
+              keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+              inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+              decoration: InputDecoration(
+                prefixIcon: type == 'search' ? const Icon(Icons.search, size: 20) : null, // optional icon
+                labelText: label,
+                hintText: placeholder,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                // style: TextStyle(fontSize: 13),
-                validator: required
-                    ? (value) {
-                  if (value == null || value.isEmpty) {
-                    return '$label is required';
-                  }
-                  if (type == 'email' && !value.contains('@')) {
-                    return 'Enter a valid email';
-                  }
-                  if (isNumeric && int.tryParse(value) == null) {
-                    return '$label must be a number';
-                  }
-                  return null;
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(color: Colors.deepPurple.shade400, width: 1.5),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              ),
+              style: const TextStyle(fontSize: 14),
+              validator: required
+                  ? (value) {
+                if (value == null || value.isEmpty) {
+                  return '$label is required';
                 }
-                    : null,
-                onSaved: (value) => formData[placeholder] = value,
+                if (type == 'email' && !value.contains('@')) {
+                  return 'Enter a valid email';
+                }
+                if (isNumeric && int.tryParse(value) == null) {
+                  return '$label must be a number';
+                }
+                return null;
+              }
+                  : null,
+              onSaved: (value) => formData[jsonKey] = value, // fixed: use jsonKey, not placeholder
+            )
+
+
+          ],
+        ),
+      );
+
+    /*case "date":
+    case "datetime":
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+            SizedBox(height: 5),
+            InkWell(
+              onTap: () async {
+                final DateTime? pickedDate = await showDatePicker(
+                  context: Get.context!,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+
+                if (pickedDate != null) {
+                  setStateIfPossible(() {
+                    formData[jsonKey] = pickedDate.toIso8601String().split('T').first;
+                  });
+                }
+              },
+              child: IgnorePointer(
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text: formData[jsonKey]?.toString() ?? '',
+                  ),
+                  decoration: InputDecoration(
+                    labelText: label,
+                    hintText: "Select $label",
+                    suffixIcon: Icon(Icons.calendar_today, color: Colors.deepPurple),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                  ),
+                  validator: required
+                      ? (value) => (value == null || value.isEmpty) ? '$label is required' : null
+                      : null,
+                ),
               ),
             ),
           ],
         ),
+      );*/
+    case "date":
+    case "datetime":
+      bool isExpanded = formData["_show_${jsonKey}"] ?? false;
+      DateTime? selectedDate = formData[jsonKey] != null
+          ? DateTime.tryParse(formData[jsonKey])
+          : null;
+
+      return StatefulBuilder(
+        builder: (context, setInnerState) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("$label", style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                const SizedBox(height: 5),
+                InkWell(
+                  onTap: () {
+                    setInnerState(() {
+                      isExpanded = !isExpanded;
+                      formData["_show_${jsonKey}"] = isExpanded;
+                    });
+                  },
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      hintText: placeholder.isNotEmpty ? placeholder : "Select date",
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      suffixIcon: Icon(
+                        isExpanded ? Icons.arrow_drop_up : Icons.calendar_today,
+                        size: 20,
+                      ),
+                    ),
+                    child: Text(
+                      selectedDate != null
+                          ? "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}"
+                          : "Select a date",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
+                if (isExpanded)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade400),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: CalendarDatePicker(
+                      initialDate: selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2035),
+                      onDateChanged: (pickedDate) {
+                        setInnerState(() {
+                          selectedDate = pickedDate;
+                          isExpanded = false;
+                          formData[jsonKey] =
+                          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                          formData["_show_${jsonKey}"] = false;
+                        });
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       );
+
 
     case "dropdown":
     case "select":
       // final List<dynamic> options = field['options'] ?? [];
       final List<dynamic> options = dropdata ?? [];
+    final String? dropdownValue = formData[jsonKey]?.toString();
 
-  final dropdownValue = (formData[placeholder] ?? formData[jsonKey])?.toString();
+  // final dropdownValue = (formData[placeholder] ?? formData[jsonKey])?.toString();
   final validValues = dropdata!.map((e) => e['value']).toSet();
       return Padding(
         padding: const EdgeInsets.all(8.0),
@@ -169,55 +222,12 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
             Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
             SizedBox(height: 5),
 
-
-            /*DropdownButtonFormField2<String>(
-              isExpanded: true,
-              // value: (formData[placeholder] ?? formData[jsonKey])?.toString() ?? '',
-              value: "",
-
-              // Match value from formData
-              // value: formData[placeholder] ?? formData[jsonKey] as String?, // assuming you're storing the "value" string
-
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              dropdownStyleData: DropdownStyleData(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-
-              // Build dropdown items from uniform map structure
-              items: dropdata!.map<DropdownMenuItem<String>>((option) {
-                return DropdownMenuItem<String>(
-                  value: option['value'], // actual value stored
-                  child: Text(option['label']), // label shown in dropdown
-                );
-              }).toList(),
-
-              onChanged: (String? value) {
-                formData[jsonKey] = value;
-              },
-
-              validator: required
-                  ? (value) {
-                if (value == null || value.isEmpty) {
-                  return '$label is required';
-                }
-                return null;
-              }
-                  : null,
-            )*/
-
             DropdownButtonFormField2<String>(
               isExpanded: true,
-              value: (dropdownValue != null && validValues.contains(dropdownValue))
-                  ? dropdownValue
-                  : null,
+              // value: (dropdownValue != null && validValues.contains(dropdownValue))
+              //     ? dropdownValue
+              //     : null,
+              value: dropdownValue,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -228,10 +238,28 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              items: dropdata!.map<DropdownMenuItem<String>>((option) {
+              /*items: dropdata!.map<DropdownMenuItem<String>>((option) {
                 return DropdownMenuItem<String>(
                   value: option['value'],
                   child: Text(option['label']),
+                );
+              }).toList(),*/
+
+              items: dropdata?.map<DropdownMenuItem<String>>((item) {
+                String display;
+
+                if (labelKey is List<String>) {
+                  // Concatenate multiple fields for display
+                  display = labelKey.map((k) => item[k]?.toString() ?? '').join(' - ');
+                } else {
+                  display = item[labelKey]?.toString() ?? '';
+                }
+
+                final value = item[valueKey]?.toString() ?? '';
+
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(display),
                 );
               }).toList(),
               onChanged: (String? value) {
@@ -248,78 +276,25 @@ Widget buildField(String fieldKey, Map<String, dynamic> formSchema,  Map<String,
             )
 
 
-            /*DropdownButtonFormField2<String>(
-              isExpanded: true,
-              value: formData[fieldKey] ?? formData[jsonKey] as String?,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              dropdownStyleData: DropdownStyleData(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10)),
-                // maxHeight: defaultheight*0.4,
-              ),
-              items: options.map((option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option.toString()),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                formData[jsonKey] = value;
-              },
-              validator: required
-                  ? (value) {
-                if (value == null || value.isEmpty) {
-                  return '$label is required';
-                }
-                return null;
-              }
-                  : null,
-            )*/
+
           ],
         ),
       );
 
 
-  /*return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-            SizedBox(height: 5),
-            DropdownButtonFormField(
-              value: formData[jsonKey],
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-              ),
-              items: options.map<DropdownMenuItem>((option) {
-                return DropdownMenuItem(
-                  value: option,
-                  child: Text(option.toString()),
-                );
-              }).toList(),
-              onChanged: (value) {
-                formData[jsonKey] = value;
-              },
-              validator: required
-                  ? (value) {
-                if (value == null) return '$label is required';
-                return null;
-              }
-                  : null,
-            ),
-          ],
-        ),
-      );*/
+
     default:
       return SizedBox.shrink();
   }
 
 }
+
+void setStateIfPossible(VoidCallback fn) {
+  if (Get.isRegistered<State>()) {
+    (Get.find<State>() as dynamic).setState(fn);
+  } else {
+    fn();
+  }
+}
+
+

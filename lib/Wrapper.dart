@@ -21,6 +21,7 @@ var session;
 var Userdata ;
 
 var companyId;
+var companyName;
 
 
 class _WrapperState extends State<Wrapper> {
@@ -40,6 +41,7 @@ class _WrapperState extends State<Wrapper> {
       setState(() {
         Userdata = jsonDecode(data);
         companyId = Userdata[0]['companys'][0]['company_id'];
+        companyName = Userdata[0]['companys'][0]['companyName'];
       });
 
       // flutter how to make a tab not refresh its state

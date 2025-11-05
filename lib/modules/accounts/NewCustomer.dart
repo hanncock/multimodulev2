@@ -58,9 +58,15 @@ class _NewCustomerState extends State<NewCustomer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildField("Names", formSchema, _formData),
-              buildField("Account No", formSchema, _formData),
+              // buildField("Account No", formSchema, _formData),
               // buildField("address", formSchema, _formData),
 
+              Row(
+                children: [
+                  Expanded(child: buildField("Account No", formSchema, _formData),),
+                  Expanded(child: buildField("VAT/PIN No", formSchema, _formData),),
+                ],
+              ),
               Row(
                 children: [
                   Expanded(child: buildField("email", formSchema, _formData)),
@@ -73,7 +79,7 @@ class _NewCustomerState extends State<NewCustomer> {
                   Expanded(child: buildField("Country", formSchema, _formData)),
                 ],
               ),
-              buildField("VAT/PIN No", formSchema, _formData),
+
 
               Column(
                 children: [

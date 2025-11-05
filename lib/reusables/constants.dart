@@ -23,6 +23,8 @@ const year = 'yyyy';
 const month = 'MMM';
 const day = 'dd';
 const timeofDay = 'HH:mm:ss';
+const Color primaryPurple = Color(0xFF4C42C7);
+
 
 const emptyImage = 'assets/lotties/empty-box.json';
 

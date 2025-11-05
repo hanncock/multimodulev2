@@ -80,7 +80,7 @@ class _UsersSetupState extends State<UsersSetup> {
             ),
             Row(
               children: [
-                Expanded(child: buildField("Gender", formSchema, _formData, ["Male", "Female"])),
+                Expanded(child: buildField("Gender", formSchema, _formData, [{"value":"Male","label":"Male"},{"value":"Female","label":"Female"}])),
                 Expanded(child: buildField("IDNo/ PPTNo", formSchema, _formData)),
 
               ],
@@ -109,7 +109,12 @@ class _UsersSetupState extends State<UsersSetup> {
               height: 300,
               child: Column(
                 children: [
-                  Text('Companys'),
+                  Row(
+                    children: [
+                      Text('Companys'),
+                      // Container(chi)
+                    ],
+                  ),
                   datalist.isEmpty ? LoadingSpinCircle():Expanded(
                     child: SingleChildScrollView(
                       child: Column(

@@ -25,6 +25,17 @@ class _AccSetupState extends State<AccSetup> {
 
   Map<String, dynamic> formSchema={};
 
+  List accTypes = [
+    {"label": "Header", "value": "Headers"},
+    {"label": "SubHeader", "value": "SubHeaders"},
+    {"label": "Posting", "value": "Posting"},
+  ];
+
+  List posting = [
+    {"label": "YES", "value": "YES"},
+    {"label": "NO", "value": "NO"},
+  ];
+
 
 
   getFields()async{
@@ -72,15 +83,8 @@ class _AccSetupState extends State<AccSetup> {
                   ),
                   Row(
                     children: [
-                      Expanded(child: buildField("Type", formSchema, _formData, [
-                        {"label": "Header", "value": "Headers"},
-                        {"label": "SubHeader", "value": "SubHeaders"},
-                        {"label": "Posting", "value": "Posting"},
-                      ])),
-                      Expanded(child: buildField("Posting", formSchema, _formData, [
-                        {"label": "YES", "value": "YES"},
-                        {"label": "NO", "value": "NO"},
-                      ])),
+                      Expanded(child: buildField("Type", formSchema, _formData, accTypes,['label'],'value')),
+                      Expanded(child: buildField("Posting", formSchema, _formData, posting,['label'],'value')),
                     ],
                   ),
                   buildField("Grouping", formSchema, _formData),
@@ -123,126 +127,4 @@ class _AccSetupState extends State<AccSetup> {
       ),
     );
   }
-
-// Widget build(BuildContext context) {
-  //   return formSchema.isEmpty ? LoadingSpinCircle() :SingleChildScrollView(
-  //     scrollDirection: Axis.vertical,
-  //     child: Form(
-  //       key: _formKey,
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           // Text('${formSchema}'),
-  //           buildField("Title", formSchema, _formData),
-  //           Row(
-  //             children: [
-  //               Expanded(child: buildField("Type", formSchema, _formData, ['Header','SubHeader'])),
-  //               Expanded(child: buildField("Posting", formSchema, _formData, ["YES","NO"])),
-  //             ],
-  //           ),
-  //           buildField("Grouping", formSchema, _formData),
-  //           /*Row(
-  //             children: [
-  //               Expanded(child: buildField("Reg No", formSchema, _formData)),
-  //               Expanded(child: buildField("Tax Pin", formSchema, _formData)),
-  //
-  //             ],
-  //           ),
-  //           buildField("id", formSchema, _formData),
-  //           buildField("NSSFNo", formSchema, _formData),
-  //           Row(
-  //             children: [
-  //               Expanded(child: buildField("Postal Code", formSchema, _formData)),
-  //               Expanded(child: buildField("Country", formSchema, _formData)),
-  //
-  //             ],
-  //           ),
-  //           Row(
-  //             children: [
-  //               Expanded(child: buildField("Town", formSchema, _formData)),
-  //               Expanded(child: buildField("Road /Street", formSchema, _formData)),
-  //             ],
-  //           ),
-  //           Row(
-  //             children: [
-  //               Expanded(child: buildField("Email", formSchema, _formData)),
-  //               Expanded(child: buildField("Phone", formSchema, _formData)),
-  //             ],
-  //           ),
-  //           buildField("Position", formSchema, _formData),
-  //
-  //           Row(
-  //             children: [
-  //               Divider(
-  //                 thickness: 1,
-  //                 color: Colors.red,
-  //               ),
-  //               Text('Modules'),
-  //               Divider(
-  //                 thickness: 1,
-  //                 color: Colors.red,
-  //               ),
-  //             ],
-  //           ),*/
-  //
-  //
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               InkWell(
-  //                   onTap:()async{
-  //                     if (_formKey.currentState!.validate()) {
-  //                       // _formData['moduleName'] = "trial module";
-  //                       print(_formData);
-  //                       _formKey.currentState!.save();
-  //                       _formData.putIfAbsent("companyId", () => companyId);
-  //                       var resu = await auth.saveMany(_formData, "/api/finance/coa/add");
-  //
-  //                       if(resu['data']['success']){
-  //                         _formData.clear();
-  //                         _formKey.currentState!.reset();
-  //                         // formSchema.clear();
-  //                         // _formData.clear();
-  //                         // print('data entered');
-  //                       }
-  //                       print('Form Data: $_formData');
-  //                       ScaffoldMessenger.of(context).showSnackBar(
-  //                         SnackBar(content: Text('Form submitted!',style: TextStyle(color: Colors.red),)),
-  //                       );
-  //
-  //                       if (widget.onSaved != null) {
-  //                         widget.onSaved!();
-  //                       }
-  //
-  //                     }
-  //                   } ,
-  //                   child: SContainer(
-  //                     color: Colors.blueAccent,
-  //                     child: Padding(
-  //                       padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 50),
-  //                       child: Text('Save',style: TextStyle(color: Colors.white),),
-  //                     ),))
-  //               // ElevatedButton(
-  //               //   onPressed: () async{
-  //               //     if (_formKey.currentState!.validate()) {
-  //               //       _formKey.currentState!.save();
-  //               //       var resu = await auth.saveMany(_formData, "/api/setup/company/add");
-  //               //       print(resu);
-  //               //      /* print('Form Data: $_formData');
-  //               //       ScaffoldMessenger.of(context).showSnackBar(
-  //               //         SnackBar(content: Text('Form submitted!',style: TextStyle(color: Colors.red),)),
-  //               //       );*/
-  //               //     }
-  //               //   },
-  //               //   child: Text('Submit'),
-  //               // ),
-  //             ],
-  //           ),
-  //
-  //         ],
-  //       ),
-  //     ),
-  //
-  //   );
-  // }
 }

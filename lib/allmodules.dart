@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:multimodule/Wrapper.dart';
+import 'package:multimodule/modules/vehicle/vehicle_dash.dart';
 import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/controller.dart';
 import 'package:multimodule/reusables/keepAlive.dart';
@@ -25,7 +26,8 @@ List<Menus> menusListed = [
   // Menus(imagePath: "bank", title: 'Form', widget: Formtester()),
   Menus(imagePath: "bank", title: 'Form', widget: DynamicFormScreen()),
   Menus(imagePath: "bank", title: 'Add new ', widget: Newformtrial()),
-  Menus(imagePath: "bank", title: 'Setup ', widget: Settingdash()),
+  Menus(imagePath: "setting", title: 'Setup ', widget: Settingdash()),
+  Menus(imagePath: "android", title: 'VMS ', widget: VehicleDash()),
 ];
 
 class Allmodules extends StatefulWidget {
@@ -62,9 +64,8 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
       bottomNavigationBar: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('current company is is ${companyId}'),
           Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(bottom: 0.0),
             child: GetBuilder<Controller>(
                 tag: "allhomes",
                 builder: (controller) {

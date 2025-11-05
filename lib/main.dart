@@ -83,8 +83,8 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final _navigatorKey = GlobalKey<NavigatorState>();
-  NavigatorState get _navigator => _navigatorKey.currentState!;
+  // final _navigatorKey = GlobalKey<NavigatorState>();
+  // NavigatorState get _navigator => _navigatorKey.currentState!;
   final sessionStateStream = StreamController<SessionState>();
 
   clearlogs()async{

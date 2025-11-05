@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-
-// import 'dart:ui';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 
 
+// Helper class for the right-click menu actions
+class PopupMenuAction {
+  final String label;
+  final void Function(Map<String, dynamic> rowData)? onTap;
+
+  PopupMenuAction({required this.label, required this.onTap});
+}
+
+
 class CustomTable extends StatefulWidget {
-
-  // final VoidCallback? onSaved;
-  // final Function(dynamic? delcallback)? callme;
-  // final void Function(Map<String, dynamic> data)? callme;
-
   final List<PopupMenuAction>? popupActions;
-
   final List headers;
   final List formDataList;
   final int fixedColumnCount;
@@ -25,7 +26,6 @@ class CustomTable extends StatefulWidget {
     this.fixedColumnCount = 1,
     this.rowsPerPage = 20,
     this.onRowSelect,
-    // this.onSaved,
     this.popupActions,
     super.key,
   });
@@ -37,12 +37,159 @@ class CustomTable extends StatefulWidget {
 class _CustomTableState extends State<CustomTable> {
   int currentPage = 0;
   late int _rowsPerPage;
-  int? selectedRowIndex;
+
+  // Use a Set to track selected row data maps for selection state
+  Set<Map<String, dynamic>> selectedRows = {};
 
   final ScrollController _verticalScrollController = ScrollController();
   final ScrollController _verticalScrollController2 = ScrollController();
   final ScrollController _horizontalScrollController = ScrollController();
 
+  // --- Styling Utility Functions ---
+
+  Widget _buildStatusChip(String status) {
+    Color color;
+    Color textColor;
+    String text = status;
+
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'available':
+        color = Colors.green.shade100.withOpacity(0.5);
+        textColor = Colors.green.shade800;
+        break;
+      case 'maintenance':
+        color = Colors.yellow.shade100.withOpacity(0.5);
+        textColor = const Color.fromARGB(255, 179, 140, 0);
+        break;
+      case 'inactive':
+        color = Colors.grey.shade200;
+        textColor = Colors.grey.shade700;
+        break;
+      case 'out of service':
+        color = Colors.red.shade100.withOpacity(0.5);
+        textColor = Colors.red.shade700;
+        break;
+      default:
+        color = Colors.grey.shade100;
+        textColor = Colors.black87;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: textColor),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(String label, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      child: InkWell(
+        onTap: () {
+          // Action logic here
+        },
+        borderRadius: BorderRadius.circular(4),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: Colors.black54),
+              const SizedBox(width: 4),
+              Text(label, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- Top Controls Widget (Search/Filter/Columns) ---
+
+  Widget _buildTopControls() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Search Bar
+          Container(
+            width: 350,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: const Row(
+              children: [
+                Icon(Icons.search, color: Colors.grey, size: 20),
+                SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Search Vehicles, operators, license plates...",
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Filter and Column Buttons
+          Row(
+            children: [
+              // Filter Button
+              Container(
+                height: 40,
+                margin: const EdgeInsets.only(right: 8),
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.filter_list, size: 20, color: Colors.black54),
+                  label: const Text("Filter", style: TextStyle(color: Colors.black87)),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  ),
+                ),
+              ),
+              // Column Selector Button
+              Container(
+                height: 40,
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.grid_view_outlined, size: 20, color: Colors.black54),
+                  label: const Text("Column", style: TextStyle(color: Colors.black87)),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Init/Dispose ---
   @override
   void initState() {
     super.initState();
@@ -52,7 +199,6 @@ class _CustomTableState extends State<CustomTable> {
       html.document.onContextMenu.listen((event) => event.preventDefault());
     }
 
-    // Sync vertical scroll of fixed and scrollable columns
     _verticalScrollController.addListener(() {
       if (_verticalScrollController.offset != _verticalScrollController2.offset) {
         _verticalScrollController2.jumpTo(_verticalScrollController.offset);
@@ -66,393 +212,450 @@ class _CustomTableState extends State<CustomTable> {
     });
   }
 
+  // @override
+  // void dispose() {
+  //   _verticalScrollController.dispose();
+  //   _verticalScrollController2.dispose();
+  //   _horizontalScrollController.dispose();
+  //   super.dispose();
+  // }
+
+  // --- Build Method ---
   @override
   Widget build(BuildContext context) {
+    const double checkboxColumnWidth = 56.0;
+    const double fixedColumnWidth = 200.0;
+    const double scrollableColumnWidth = 150.0;
+    const double actionColumnWidth = 200.0; // Increased to help with horizontal scroll
+
     final fixedHeaders = widget.headers.take(widget.fixedColumnCount).toList();
     final scrollableHeaders = widget.headers.skip(widget.fixedColumnCount).toList();
 
-    final totalRows = widget.formDataList.length;
+    // CRITICAL FIX: Ensure formDataList is a List
+    final List dataList = widget.formDataList ?? [];
+
+    final totalRows = dataList.length;
     final totalPages = (totalRows / _rowsPerPage).ceil();
+
+    if (currentPage >= totalPages && totalPages > 0) {
+      currentPage = totalPages - 1;
+    } else if (totalPages == 0) {
+      currentPage = 0;
+    }
+
     final startIndex = currentPage * _rowsPerPage;
     final endIndex = (startIndex + _rowsPerPage).clamp(0, totalRows);
-    final currentRows = widget.formDataList.sublist(startIndex, endIndex);
+
+    final currentRows = dataList.sublist(startIndex, endIndex).cast<Map<String, dynamic>>();
 
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(14.0),
       child: Column(
         children: [
+          // Top Controls (Search, Filter, Column)
+          _buildTopControls(),
+
+          // Main Table Container
           Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Fixed Columns
-                Column(
-                  children: [
-                    // Fixed Header
-                    Row(
-                      children: fixedHeaders.map((header) {
-                        return Container(
-                          width: 250,
-                          padding: const EdgeInsets.all(12),
-                          color: Colors.blueGrey[100],
-                          child: Text(
-                            header,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const Divider(height: 1, color: Colors.black),
-
-                    // Fixed Data
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _verticalScrollController,
-                        child: Column(
-                          children: currentRows.asMap().entries.map((entry) {
-                            int localIndex = entry.key;
-                            var row = entry.value;
-                            int globalIndex = startIndex + localIndex;
-                            bool isSelected = selectedRowIndex == globalIndex;
-
-                            return GestureDetector(
-
-                              onDoubleTap: (){
-                                if (widget.onRowSelect != null) {
-                                  widget.onRowSelect!(row); // Pass selected row data
-                                }
-                              },
-
-                              onSecondaryTapDown: (details){
-                                showMenu(
-                                  context: context,
-                                  position: RelativeRect.fromLTRB(
-                                    details.globalPosition.dx,
-                                    details.globalPosition.dy,
-                                    details.globalPosition.dx,
-                                    details.globalPosition.dy,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                children: [
+                  // Table Data Area
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Fixed Columns (Checkbox + Fixed Data)
+                        Column(
+                          children: [
+                            // Fixed Header (Checkbox + Fixed Headers)
+                            Row(
+                              children: [
+                                // Checkbox Header
+                                Container(
+                                  width: checkboxColumnWidth,
+                                  height: 48,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade50,
+                                    border: Border(
+                                      bottom: BorderSide(color: Colors.grey.shade300),
+                                      // Vertical separator removed
+                                    ),
                                   ),
-                                  items: widget.popupActions?.map((action) {
-                                    return PopupMenuItem(
-                                      child: Text(action.label),
-                                      onTap: () {
-                                        Future.delayed(Duration.zero, () {
-                                          action.onTap?.call(row);
-                                        });
-                                      },
-                                    );
-                                  }).toList() ?? [],
-                                );
-                              },
-                              child: Row(
-                            children: fixedHeaders.map((key) {
-                              final value = row[key] ?? '';
-                              return Container(
-                                width: 250,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? Colors.blue.shade50 : null,
-                                  border: Border(
-                                    bottom: BorderSide(color: Colors.grey.shade300),
-                                    right: BorderSide(color: Colors.grey.shade200),
+                                  child: Checkbox(
+                                    value: currentRows.isNotEmpty && selectedRows.length == currentRows.length,
+                                    onChanged: (bool? val) {
+                                      setState(() {
+                                        if (val == true) {
+                                          selectedRows.addAll(currentRows);
+                                        } else {
+                                          selectedRows.clear();
+                                        }
+                                      });
+                                    },
+                                    activeColor: Colors.blue.shade600,
+                                    checkColor: Colors.white,
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                 ),
-                                child: Text(value.toString(),style: TextStyle(fontSize: 13),),
-                              );
-                            }).toList(),
-                            ),
-                            );
-
-                            /*return InkWell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = globalIndex;
-                                });
-
-                                if (widget.onRowSelect != null) {
-                                  widget.onRowSelect!(row); // Pass selected row data
-                                }
-                              },
-                              // onDoubleTap: (){
-                              //   if (widget.onRowSelect != null) {
-                              //     widget.onRowSelect!(row); // Pass selected row data
-                              //   }
-                              //
-                              //   print("will be switching to selected scree");
-                              //
-                              // },
-                              child: Row(
-                                children: fixedHeaders.map((key) {
-                                  final value = row[key] ?? '';
+                                // Fixed Text Headers
+                                ...fixedHeaders.map((header) {
                                   return Container(
-                                    width: 250,
-                                    padding: const EdgeInsets.all(12),
+                                    width: fixedColumnWidth,
+                                    height: 48,
+                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                    alignment: Alignment.centerLeft,
                                     decoration: BoxDecoration(
-                                      color: isSelected ? Colors.blue.shade50 : null,
+                                      color: Colors.grey.shade50,
                                       border: Border(
                                         bottom: BorderSide(color: Colors.grey.shade300),
-                                        right: BorderSide(color: Colors.grey.shade200),
+                                        // Vertical separator removed
                                       ),
                                     ),
-                                    child: Text(value.toString(),style: TextStyle(fontSize: 13),),
+                                    child: Text(
+                                      header.toString(),
+                                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
+                                    ),
                                   );
                                 }).toList(),
-                              ),
-                            );*/
-                          }).toList(),
-                        ),
-                      ),
-                     ),
-                  ],
-                ),
+                              ],
+                            ),
 
-                // Scrollable Columns
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: _horizontalScrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [
-                        // Scrollable Header
-                        Row(
-                          children: scrollableHeaders.map((header) {
-                            return Container(
-                              width: 200,
-                              padding: const EdgeInsets.all(12),
-                              color: Colors.blueGrey[100],
-                              child: Text(
-                                header,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        const Divider(height: 1, color: Colors.black),
+                            // Fixed Data
+                            Expanded(
+                              child: SingleChildScrollView(
+                                controller: _verticalScrollController,
+                                child: Column(
+                                  children: currentRows.map((row) {
+                                    bool isSelected = selectedRows.contains(row);
 
-                        // Scrollable Data
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          if (isSelected) {
+                                            selectedRows.remove(row);
+                                          } else {
+                                            selectedRows.add(row);
+                                          }
+                                        });
+                                      },
+                                      onDoubleTap: (){
+                                        if (widget.onRowSelect != null) {
+                                          widget.onRowSelect!(row);
+                                        }
+                                      },
+                                      onSecondaryTapDown: (details){
+                                        showMenu(
+                                          context: context,
+                                          position: RelativeRect.fromLTRB(
+                                            details.globalPosition.dx,
+                                            details.globalPosition.dy,
+                                            details.globalPosition.dx,
+                                            details.globalPosition.dy,
+                                          ),
+                                          items: widget.popupActions?.map((action) {
+                                            return PopupMenuItem(
+                                              child: Text(action.label),
+                                              onTap: () {
+                                                Future.delayed(Duration.zero, () {
+                                                  action.onTap?.call(row);
+                                                });
+                                              },
+                                            );
+                                          }).toList() ?? [],
+                                        );
+                                      },
+                                      child: Container(
+                                        color: isSelected ? Colors.blue.shade50 : Colors.transparent,
+                                        child: Row(
+                                          children: [
+                                            // Checkbox
+                                            Container(
+                                              width: checkboxColumnWidth,
+                                              height: 52,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(color: Colors.grey.shade200),
+                                                ),
+                                              ),
+                                              child: Checkbox(
+                                                value: isSelected,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    if (val == true) {
+                                                      selectedRows.add(row);
+                                                    } else {
+                                                      selectedRows.remove(row);
+                                                    }
+                                                  });
+                                                },
+                                                activeColor: Colors.blue.shade600,
+                                                checkColor: Colors.white,
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              ),
+                                            ),
+
+                                            // Fixed Data Cells
+                                            ...fixedHeaders.map((key) {
+                                              final value = row[key] ?? '';
+                                              return Container(
+                                                width: fixedColumnWidth,
+                                                height: 52,
+                                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                                alignment: Alignment.centerLeft,
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(color: Colors.grey.shade200),
+                                                    // Vertical separator removed
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  value.toString(),
+                                                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Scrollable Columns
                         Expanded(
                           child: SingleChildScrollView(
-                            controller: _verticalScrollController2,
+                            controller: _horizontalScrollController,
+                            scrollDirection: Axis.horizontal,
                             child: Column(
-                              children: currentRows.asMap().entries.map((entry) {
-                                int localIndex = entry.key;
-                                var row = entry.value;
-                                int globalIndex = startIndex + localIndex;
-                                bool isSelected = selectedRowIndex == globalIndex;
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Scrollable Header
+                                Row(
+                                  children: scrollableHeaders.map((header) {
+                                    bool isActions = header == 'Actions';
+                                    return Container(
+                                      width: isActions ? actionColumnWidth : scrollableColumnWidth,
+                                      height: 48,
+                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                      alignment: Alignment.centerLeft,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade50,
 
-                                return GestureDetector(
-                                  onDoubleTap: (){
-                                    if (widget.onRowSelect != null) {
-                                      widget.onRowSelect!(row); // Pass selected row data
-                                    }
-                                  },
-
-
-
-                                  onSecondaryTapDown: (details){
-                                    showMenu(
-                                      context: context,
-                                      position: RelativeRect.fromLTRB(
-                                        details.globalPosition.dx,
-                                        details.globalPosition.dy,
-                                        details.globalPosition.dx,
-                                        details.globalPosition.dy,
+                                        border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
                                       ),
-                                      items: widget.popupActions?.map((action) {
-                                        return PopupMenuItem(
-                                          child: Text(action.label),
+                                      child: Text(
+                                        header.toString(),
+                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+
+                                // Scrollable Data
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    controller: _verticalScrollController2,
+                                    child: Column(
+                                      children: currentRows.map((row) {
+                                        bool isSelected = selectedRows.contains(row);
+
+                                        return InkWell(
                                           onTap: () {
-                                            Future.delayed(Duration.zero, () {
-                                              action.onTap?.call(row);
+                                            setState(() {
+                                              if (isSelected) {
+                                                selectedRows.remove(row);
+                                              } else {
+                                                selectedRows.add(row);
+                                              }
                                             });
                                           },
-                                        );
-                                      }).toList() ?? [],
-                                    );
-                                  },
+                                          onDoubleTap: (){
+                                            if (widget.onRowSelect != null) {
+                                              widget.onRowSelect!(row);
+                                            }
+                                          },
+                                          onSecondaryTapDown: (details){
+                                            showMenu(
+                                              context: context,
+                                              position: RelativeRect.fromLTRB(
+                                                details.globalPosition.dx,
+                                                details.globalPosition.dy,
+                                                details.globalPosition.dx,
+                                                details.globalPosition.dy,
+                                              ),
+                                              items: widget.popupActions?.map((action) {
+                                                return PopupMenuItem(
+                                                  child: Text(action.label),
+                                                  onTap: () {
+                                                    Future.delayed(Duration.zero, () {
+                                                      action.onTap?.call(row);
+                                                    });
+                                                  },
+                                                );
+                                              }).toList() ?? [],
+                                            );
+                                          },
+                                          child: Container(
+                                            color: isSelected ? Colors.blue.shade50 : Colors.transparent,
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: scrollableHeaders.map((key) {
+                                                final value = row[key] ?? '';
+                                                bool isStatus = key == 'Status';
+                                                bool isActions = key == 'Actions';
 
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    // textAlign: TextAlign.left,
+                                                Widget cellContent;
+                                                double width = isActions ? actionColumnWidth : scrollableColumnWidth;
 
-                                    children: scrollableHeaders.map((key) {
-                                      final value = row[key] ?? '';
-                                      return Container(
-                                          width: 200,
-                                          padding: const EdgeInsets.all(12),
-                                          alignment: Alignment.centerLeft,
-                                          decoration: BoxDecoration(
-                                              color: isSelected ? Colors.blue.shade50 : null,
-                                              border: Border(
-                                                bottom: BorderSide(color: Colors.grey.shade300),
-                                                right: BorderSide(color: Colors.grey.shade200),
-                                              )),
-                                          child: Text(
-                                            value.toString(),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            softWrap: false,
-                                            style: const TextStyle(fontSize: 13),
-                                          )
-                                      );
-                                      /* return Container(
-                                          width: 200,
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: isSelected ? Colors.blue.shade50 : null,
-                                            border: Border(
-                                              bottom: BorderSide(color: Colors.grey.shade300),
-                                              right: BorderSide(color: Colors.grey.shade200),
+                                                if (isStatus) {
+                                                  cellContent = _buildStatusChip(value.toString());
+                                                } else if (isActions) {
+                                                  cellContent = Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                      _buildActionButton("View", Icons.visibility_outlined),
+                                                      _buildActionButton("Edit", Icons.edit_outlined),
+                                                      // More menu
+                                                      Container(
+                                                        margin: const EdgeInsets.only(left: 4),
+                                                        child: Icon(Icons.more_vert, size: 20, color: Colors.grey.shade600),
+                                                      ),
+                                                    ],
+                                                  );
+                                                } else {
+                                                  cellContent = Text(
+                                                    value.toString(),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    softWrap: false,
+                                                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                                                  );
+                                                }
+
+                                                return Container(
+                                                  width: width,
+                                                  height: 52,
+                                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                                  alignment: isActions ? Alignment.centerRight : Alignment.centerLeft,
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                        bottom: BorderSide(color: Colors.grey.shade200),
+                                                        // Vertical separator removed
+                                                      )),
+                                                  child: cellContent,
+                                                );
+                                              }).toList(),
                                             ),
                                           ),
-                                          child: Text(value.toString()),
-                                        );*/
-                                    }).toList(),
+                                        );
+                                      }).toList(),
+                                    ),
                                   ),
-                                );
-
-                                /*return InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedRowIndex = globalIndex;
-                                    });
-                                  },
-
-                                  onDoubleTap: (){
-                                    if (widget.onRowSelect != null) {
-                                      widget.onRowSelect!(row); // Pass selected row data
-                                    }
-
-
-                                    // if()
-
-
-                                  },
-
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    // textAlign: TextAlign.left,
-
-                                    children: scrollableHeaders.map((key) {
-                                      final value = row[key] ?? '';
-                                      return Container(
-                                        width: 200,
-                                        padding: const EdgeInsets.all(12),
-                                        alignment: Alignment.centerLeft,
-                                          decoration: BoxDecoration(
-                                              color: isSelected ? Colors.blue.shade50 : null,
-                                              border: Border(
-                                                bottom: BorderSide(color: Colors.grey.shade300),
-                                                right: BorderSide(color: Colors.grey.shade200),
-                                              )),
-                                        child: Text(
-                                          value.toString(),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          style: const TextStyle(fontSize: 13),
-                                        )
-                                      );
-                                     *//* return Container(
-                                        width: 200,
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: isSelected ? Colors.blue.shade50 : null,
-                                          border: Border(
-                                            bottom: BorderSide(color: Colors.grey.shade300),
-                                            right: BorderSide(color: Colors.grey.shade200),
-                                          ),
-                                        ),
-                                        child: Text(value.toString()),
-                                      );*//*
-                                    }).toList(),
-                                  ),
-                                );*/
-                              }).toList(),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          const SizedBox(height: 12),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.white,
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Rows per page selector
-                    Row(
+                  // Pagination Footer
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Rows per page:", style: TextStyle(fontSize: 12)),
-                        const SizedBox(width: 4),
-                        DropdownButton<int>(
-                          value: _rowsPerPage,
-                          isDense: true, // compact layout
-                          underline: SizedBox(), // remove underline
-                          style: const TextStyle(fontSize: 12, color: Colors.black),
-                          items: [5, 10, 15, 20, 25].map((value) {
-                            return DropdownMenuItem(
-                              value: value,
-                              child: Text('$value', style: const TextStyle(fontSize: 12)),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _rowsPerPage = value;
-                                currentPage = 0;
-                              });
-                            }
-                          },
+                        // Rows per page selector and count text
+                        Row(
+                          children: [
+                            Container(
+                              height: 28,
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: DropdownButton<int>(
+                                value: _rowsPerPage,
+                                isDense: true,
+                                underline: const SizedBox(),
+                                style: const TextStyle(fontSize: 13, color: Colors.black87),
+                                icon: const Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.black54),
+                                items: [10, 20, 50].map((value) {
+                                  return DropdownMenuItem(
+                                    value: value,
+                                    child: Text('$value', style: const TextStyle(fontSize: 13)),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _rowsPerPage = value;
+                                      currentPage = 0;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Gracefully handle 0 rows
+                            Text(
+                              totalRows == 0
+                                  ? "Of 0 vehicles (0-0)"
+                                  : "Of $totalRows vehicles (${startIndex + 1}-${endIndex})",
+                              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                            ),
+                          ],
+                        ),
+
+                        // Previous/Next Buttons
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: currentPage > 0 ? () => setState(() => currentPage--) : null,
+                              style: TextButton.styleFrom(
+                                foregroundColor: currentPage > 0 ? Colors.black87 : Colors.grey,
+                                textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                minimumSize: Size(60, 32),
+                              ),
+                              child: const Text("Previous"),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: currentPage < totalPages - 1
+                                  ? () => setState(() => currentPage++)
+                                  : null,
+                              style: TextButton.styleFrom(
+                                foregroundColor: currentPage < totalPages - 1 ? Colors.black87 : Colors.grey,
+                                textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                minimumSize: Size(60, 32),
+                              ),
+                              child: const Text("Next"),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-
-                    Row(
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: BoxConstraints(),
-                          onPressed: currentPage > 0 ? () => setState(() => currentPage--) : null,
-                          icon: const Icon(Icons.chevron_left,),
-                        ),
-                        const VerticalDivider(thickness: 0.5),
-                        Text(
-                          "${startIndex + 1}–$endIndex of $totalRows",
-                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-                        ),
-                        const VerticalDivider(thickness: 0.5),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: BoxConstraints(),
-                          onPressed: currentPage < totalPages - 1
-                              ? () => setState(() => currentPage++)
-                              : null,
-                          icon: const Icon(Icons.chevron_right),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -466,12 +669,4 @@ class _CustomTableState extends State<CustomTable> {
     _horizontalScrollController.dispose();
     super.dispose();
   }
-}
-
-
-class PopupMenuAction {
-  final String label;
-  final void Function(Map<String, dynamic> rowData)? onTap;
-
-  PopupMenuAction({required this.label, required this.onTap});
 }

@@ -7,6 +7,7 @@ import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/formbuilder.dart';
 
 import '../../reusables/constants.dart';
+import '../../reusables/loader.dart';
 
 class CompanySetup extends StatefulWidget {
 
@@ -65,7 +66,7 @@ class _CompanySetupState extends State<CompanySetup> {
 
   @override
   Widget build(BuildContext context) {
-    return formSchema.isEmpty ? Text('loading') :SingleChildScrollView(
+    return formSchema.isEmpty ? LoadingSpinCircle() :SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Form(
           key: _formKey,
@@ -128,7 +129,11 @@ class _CompanySetupState extends State<CompanySetup> {
                           final module = datalist[index];
 
                           // Check if the module is already in _formData['modules']
-                          final isSelected = _formData['modules'].any((m) => m['module_id'] == module['module_id']);
+                          // final isSelected = _formData['modules'].isNull ? _formData['modules'].any((m) => m['module_id'] == module['module_id']) : false;
+                          final isSelected =
+                          _formData['modules'] != null
+                              ? _formData['modules'].any((m) => m['module_id'] == module['module_id'])
+                              : false;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -54,89 +54,83 @@ class _UsersState extends State<Users>{
       child: Column(
         children: [
 
-          /*Row(
-            children: [
-              InkWell(
-                  onTap: (){
-                    sideContent =! sideContent;
+          Container(
+            height: 50,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Left side: Search and All dropdown (Placeholder)
+                Row(
+                  children: [
+                    Container(
+                      width: 250,
+                      height: 35,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F8FC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.search, size: 18, color: Colors.black54),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'User',
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                                hintStyle: TextStyle(fontSize: 14, color: Colors.black54),
+                              ),
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    // 'All' Dropdown (Simplified)
+                    Container(
+                      height: 35,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F8FC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                      ),
+                      child: const Center(
+                          child: Row(
+                            children: [
+                              Text('All', style: TextStyle(fontSize: 14)),
+                              Icon(Icons.keyboard_arrow_down_sharp, size: 18),
+                            ],
+                          )),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    sideContent = !sideContent;
                     row.clear();
                     setState(() {});
                   },
-                  child: Text('Add Company'))
-            ],
-          ),*/
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Add Company Button
-              ElevatedButton.icon(
-                onPressed: () {
-                  sideContent = !sideContent;
-                  row.clear();
-                  setState(() {});
-                },
-                icon: Icon(Icons.add_business),
-                label: Text('Add User'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-
-              // Search Field
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: 'Search Users...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                    ),
-                    onChanged: (value) {
-                      // Update search filter logic
-                    },
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text("Company", style: TextStyle(fontSize: 13)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryPurple,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
-              ),
-
-              // Delete Company Button
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Add delete logic here
-                },
-                icon: Icon(Icons.delete),
-                label: Text('Delete'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () async{
-                  print("${row}");
-                  // Map<String, dynamic> cred = {
-                  //   "id":
-                  //   "username":,
-                  //   "password":"",
-                  //   "user_id":,
-                  // };
-                  //
-                  // var resu = await auth.saveMany(cred, "/api/setup/auth/add");
-                  // Add delete logic here
-                },
-                icon: Icon(Icons.settings),
-                label: Text('Create Acc'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
 
 
@@ -222,32 +216,35 @@ class _UsersState extends State<Users>{
                 ),
               ),
               sideContent ? SContainer(
+                height: MediaQuery.of(context).size.height * 0.9,
+
                 color: Colors.white,
                 width: 550,
-                // color: Colors.blueAccent,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: SContainer(
-                          color: Colors.blueAccent,
-                          child: Center(child:  Text('User Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
-                        ),)
-                      ],
-                    ),
-                    UsersSetup(
-                      editingRow: row,
-                      onSaved: () {
-                        getUsers(); // Refresh list
-                        setState(() {
-                          sideContent = false; // Optionally close the form after save
-                        });
-                      },
-                    ),
-
-                    // CompanySetup(editingRow: row,),
-                  ],
+                child: Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: SContainer(
+                            color: Colors.blueAccent,
+                            child: Center(child:  Text('User Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
+                          ),)
+                        ],
+                      ),
+                      UsersSetup(
+                        editingRow: row,
+                        onSaved: () {
+                          getUsers(); // Refresh list
+                          setState(() {
+                            sideContent = false; // Optionally close the form after save
+                          });
+                        },
+                      ),
+                
+                      // CompanySetup(editingRow: row,),
+                    ],
+                  ),
                 ),
               ): SizedBox(child: Text(''),)
             ],

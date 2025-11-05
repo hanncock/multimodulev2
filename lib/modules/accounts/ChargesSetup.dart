@@ -44,16 +44,16 @@ class _ChargesSetupState extends State<ChargesSetup> {
     print('gotten posting fields are ');
     print(resu);
 
-    setState(() {
-      postingAcc = resu.map((item) => {
-        'label': "${item['acccode']} ${item['accTitle']}", // or whatever field you want to show
-        'value': item['coa_id']    // or the value to save
-      }).toList();
-    });
-
     // setState(() {
-    //   postingAcc = resu;
+    //   postingAcc = resu.map((item) => {
+    //     'label': "${item['acccode']} ${item['accTitle']}", // or whatever field you want to show
+    //     'value': item['coa_id']    // or the value to save
+    //   }).toList();
     // });
+
+    setState(() {
+      postingAcc = resu;
+    });
   }
 
   getDrops()async{
@@ -90,7 +90,7 @@ class _ChargesSetupState extends State<ChargesSetup> {
             // Text('${formSchema}'),
             buildField("Acc Package Name", formSchema, _formData),
             buildField("Description", formSchema, _formData),
-            buildField("Posting Acc", formSchema, _formData, postingAcc),
+            buildField("Posting Acc", formSchema, _formData, postingAcc,['accTitle','grouping'],'coa_id'),
             buildField("amount", formSchema, _formData,),
             /*Row(
               children: [

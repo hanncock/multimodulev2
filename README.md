@@ -4,81 +4,28 @@
 /api/{module}/{class} =>  get the data
 
 
-
-case "dropdown":
-case "select":
-final List<dynamic> options = field['options'] ?? [];
-
-return Padding(
-padding: const EdgeInsets.all(8.0),
-child: Column(
-crossAxisAlignment: CrossAxisAlignment.start,
-children: [
-Text("$label", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-SizedBox(height: 5),
-DropdownButtonFormField(
-value: formData[jsonKey],
-decoration: InputDecoration(
-border: OutlineInputBorder(),
-contentPadding: EdgeInsets.symmetric(horizontal: 8),
-),
-items: options.map<DropdownMenuItem>((option) {
-return DropdownMenuItem(
-value: option,
-child: Text(option.toString()),
-);
-}).toList(),
-onChanged: (value) {
-formData[jsonKey] = value;
-},
-validator: required
-? (value) {
-if (value == null) return '$label is required';
-return null;
-}
-: null,
-),
-],
-),
-);
+https://dribbble.com/search/vehicle-management-system-wiith-forms-for-adding-new-vehicle
 
 
+[//]: # (INSERT INTO accpackages &#40;accpackage_id, accpackageName, description, poastingaccId, companyId, amount&#41;)
 
-case "dropdown":
-final List<dynamic> options = field['options'] ?? [];
+[//]: # (VALUES)
 
-return Padding(
-padding: const EdgeInsets.all(8.0),
-child: Column(
-crossAxisAlignment: CrossAxisAlignment.start,
-children: [
-Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-SizedBox(height: 5),
-DropdownButtonFormField(
-value: formData[jsonKey],
-decoration: InputDecoration(
-border: OutlineInputBorder(),
-contentPadding: EdgeInsets.symmetric(horizontal: 8),
-),
-items: options.map<DropdownMenuItem>((option) {
-if (option is Map) {
-return DropdownMenuItem(
-value: option['value'],
-child: Text(option['label'].toString()),
-);
-}
-return DropdownMenuItem(
-value: option,
-child: Text(option.toString()),
-);
-}).toList(),
-onChanged: (value) {
-formData[jsonKey] = value;
-},
-validator: required
-? (value) => value == null ? '$label is required' : null
-: null,
-),
-],
-),
-);
+[//]: # (&#40;'9081522359106185', 'Subscription', 'Instant Subscription', '9081510518846744', 'COMP006', 10000&#41;,)
+
+[//]: # (&#40;'9091100561498077', 'Registration', 'Student Registration', '9081510518846744', 'COMP006', 5000&#41;;)
+
+[//]: # ()
+[//]: # ()
+[//]: # (INSERT INTO accpackages &#40;accpackage_id, accpackageName, description, coa_id, companyId, amount&#41;)
+
+[//]: # (VALUES)
+
+[//]: # (&#40;'9081522359106185', 'Subscription', 'Instant Subscription', '9081510518846744', 'COMP006', 10000&#41;,)
+
+[//]: # (&#40;'9091100561498077', 'Registration', 'Student Registration', '9081510518846744', 'COMP006', 5000&#41;;)
+
+INSERT INTO accpackages (accpackage_id, accpackageName, description, postingaccId, companyId, amount)
+VALUES
+('9081522359106185', 'Subscription', 'Instant Subscription', '9081510518846744', 'COMP006', 10000),
+('9091100561498077', 'Registration', 'Student Registration', '9081510518846744', 'COMP006', 5000);

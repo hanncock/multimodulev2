@@ -161,32 +161,35 @@ class _CustomersState extends State<Customers>{
                 ),
               ),
               sideContent ? SContainer(
+                height: MediaQuery.of(context).size.height * 0.9,
                 color: Colors.white,
                 width: 550,
                 // color: Colors.blueAccent,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: SContainer(
-                          color: Colors.blueAccent,
-                          child: Center(child:  Text('Customer Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
-                        ),)
-                      ],
-                    ),
-
-                    NewCustomer(
-                      editingRow: row,
-                      onSaved: () {
-                        getCustomers(); // Refresh list
-                        setState(() {
-                          sideContent = false; // Optionally close the form after save
-                        });
-                      },
-                    )
-
-                  ],
+                child: Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: SContainer(
+                            color: Colors.blueAccent,
+                            child: Center(child:  Text('Customer Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
+                          ),)
+                        ],
+                      ),
+                  
+                      NewCustomer(
+                        editingRow: row,
+                        onSaved: () {
+                          getCustomers(); // Refresh list
+                          setState(() {
+                            sideContent = false; // Optionally close the form after save
+                          });
+                        },
+                      )
+                  
+                    ],
+                  ),
                 ),
               ): SizedBox(child: Text(''),)
             ],

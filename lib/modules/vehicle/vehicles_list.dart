@@ -1,49 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:multimodule/modules/accounts/AccSetup.dart';
-import 'package:multimodule/modules/accounts/ChargesSetup.dart';
+import 'package:multimodule/modules/vehicle/vehiclesetup.dart';
 import '../../reusables/RoundedContainer.dart';
 import '../../reusables/constants.dart';
 import '../../reusables/controller.dart';
 import '../../reusables/tablemaker.dart';
 
-
-class ChargePackages extends StatefulWidget {
-  const ChargePackages({super.key});
+class Vehicles extends StatefulWidget {
+  const Vehicles({super.key});
 
   @override
-  State<ChargePackages> createState() => _ChargePackagesState();
+  State<Vehicles> createState() => _VehiclesState();
 }
 
-class _ChargePackagesState extends State<ChargePackages>{
+class _VehiclesState extends State<Vehicles>{
   late TabController tabController;
 
-  Controller get controller => Get.find<Controller>(tag: "accounts");
+  Controller get controller => Get.find<Controller>(tag: "Companies");
 
-  List accounts = [];
-
+  List Vehicles = [];
 
   bool sideContent = false;
 
   Map<String,dynamic> row =  {};
 
-  getChargePackages()async{
-    var resu = await auth.getvalues("api/finance/accpackage/list");
+  getVehicles()async{
+    var resu = await auth.getvalues("api/automotive/vehicle/list");
     // print("values found are ${resu}");
     setState(() {
-      accounts= resu;
+      Vehicles= resu;
     });
   }
 
 
 
-
-
   @override
   void initState(){
+
     super.initState();
-    getChargePackages();
+    getVehicles();
+    print("getting values");
+
   }
 
   @override
@@ -52,6 +50,18 @@ class _ChargePackagesState extends State<ChargePackages>{
       scrollDirection: Axis.vertical,
       child: Column(
         children: [
+
+          /*Row(
+            children: [
+              InkWell(
+                  onTap: (){
+                    sideContent =! sideContent;
+                    row.clear();
+                    setState(() {});
+                  },
+                  child: Text('Add Company'))
+            ],
+          ),*/
 
           Container(
             height: 50,
@@ -119,7 +129,7 @@ class _ChargePackagesState extends State<ChargePackages>{
                     setState(() {});
                   },
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text("Add Package", style: TextStyle(fontSize: 13)),
+                  label: const Text("Vehicle", style: TextStyle(fontSize: 13)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryPurple,
                     foregroundColor: Colors.white,
@@ -131,61 +141,6 @@ class _ChargePackagesState extends State<ChargePackages>{
               ],
             ),
           ),
-
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     // Add Company Button
-          //     ElevatedButton.icon(
-          //       onPressed: () {
-          //         sideContent = !sideContent;
-          //         row.clear();
-          //         setState(() {});
-          //       },
-          //       icon: Icon(Icons.add_business),
-          //       label: Text('Add Package'),
-          //       style: ElevatedButton.styleFrom(
-          //         backgroundColor: Colors.blue,
-          //         foregroundColor: Colors.white,
-          //
-          //       ),
-          //     ),
-          //
-          //     // Search Field
-          //     Expanded(
-          //       child: Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //         child: TextField(
-          //           decoration: InputDecoration(
-          //             prefixIcon: Icon(Icons.search),
-          //             hintText: 'Search ChargePackages...',
-          //             border: OutlineInputBorder(
-          //               borderRadius: BorderRadius.circular(8.0),
-          //             ),
-          //             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-          //           ),
-          //           onChanged: (value) {
-          //             // Update search filter logic
-          //           },
-          //         ),
-          //       ),
-          //     ),
-          //
-          //     // Delete Company Button
-          //     ElevatedButton.icon(
-          //       onPressed: () {
-          //         // Add delete logic here
-          //       },
-          //       icon: Icon(Icons.delete),
-          //       label: Text('Delete'),
-          //       style: ElevatedButton.styleFrom(
-          //         backgroundColor: Colors.red,
-          //         foregroundColor: Colors.white,
-          //       ),
-          //     ),
-          //   ],
-          // ),
-
 
           Row(
             children: [
@@ -200,23 +155,20 @@ class _ChargePackagesState extends State<ChargePackages>{
                   height: MediaQuery.of(context).size.height * 0.9,
                   child: CustomTable(
                     headers: [
-                      // "ChargePackages_id",
+                      "vehicle_id",
                       // "module_id",
-                      "accpackage_id",
-                      "accpackageName",
-                      "description",
-                      "amount",
-                      // "regNo",
-                      // "taxPin",
-                      // "postalCode",
-                      // "country",
-                      // "town",
-                      // "road",
-                      // "email",
-                      // "phone",
+                      "vehicle_name",
+                      "vin",
+                      "chasis_No",
+                      "milleage",
+                      "color",
+                      "man_Year",
+                      "engineType",
+                      "fuelType",
+                      "vehicleMake",
                       // "position",
                     ],
-                    formDataList: accounts,
+                    formDataList: Vehicles,
                     onRowSelect: (selectedRow){
 
                       setState(() {
@@ -241,30 +193,21 @@ class _ChargePackagesState extends State<ChargePackages>{
                       children: [
                         Expanded(child: SContainer(
                           color: Colors.blueAccent,
-                          child: Center(child:  Text('Account Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
+                          child: Center(child:  Text('Vehicle Details',style: TextStyle(color: Colors.white,fontSize: 14),)),
                         ),)
                       ],
                     ),
-
-                   ChargesSetup(
-                     editingRow: row,
-                     onSaved: () {
-                       getChargePackages(); // Refresh list
-                       setState(() {
-                         sideContent = false; // Optionally close the form after save
-                       });
-                     },
-                   )
-                   /* AccSetup(
+                    VehicleSetup(
                       editingRow: row,
                       onSaved: () {
-                        getChargePackages(); // Refresh list
+                        getVehicles(); // Refresh list
                         setState(() {
                           sideContent = false; // Optionally close the form after save
                         });
                       },
-                    ),*/
+                    ),
 
+                    // CompanySetup(editingRow: row,),
                   ],
                 ),
               ): SizedBox(child: Text(''),)
@@ -275,3 +218,4 @@ class _ChargePackagesState extends State<ChargePackages>{
     );
   }
 }
+

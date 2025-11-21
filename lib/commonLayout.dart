@@ -384,7 +384,7 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
                   child: Text(
                     "$companyName",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: primaryPurple,
                     ),
@@ -439,8 +439,8 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
                                 "${item.title}",
                                 style: TextStyle(
                                   color: isSelected ? primaryPurple : Colors.black87,
-                                  fontSize: 14,
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  fontSize: 13,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                 ),
                               ),
                             ),
@@ -452,19 +452,36 @@ class _CommonLayoutState extends State<CommonLayout> with TickerProviderStateMix
                 )),
 
                 // Bottom section (profile/settings)
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.notifications_none, color: Colors.black54, size: 22),
-                      const SizedBox(width: 15),
-                      const Icon(Icons.person_outline, color: Colors.black54, size: 22),
-                      const SizedBox(width: 10),
-                      Text(
-                        "${Userdata[0]['firstName']}",
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                    ],
+                Card(
+                  elevation: 10,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.account_circle_rounded,color: primaryColor,),
+                        Expanded(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                "${Userdata[0]['firstName']}",
+                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                              ),),
+                              Column(
+                                children: [
+                                  const Icon(Icons.notifications_none, color: Colors.black54, size: 22),
+                                  const Icon(Icons.settings, color: Colors.black54, size: 22),
+                                ],
+                              ),
+
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

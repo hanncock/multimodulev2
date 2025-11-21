@@ -71,7 +71,7 @@ class _InvoicesState extends State<Invoices>{
               // Add Company Button
               ElevatedButton.icon(
                 onPressed: () {
-                  controller.addModule("accounts", NewInvoice());
+                  controller.addModule("New Invoice", NewInvoice());
                   // sideContent = !sideContent;
                   // row.clear();
                   // setState(() {});
@@ -104,6 +104,12 @@ class _InvoicesState extends State<Invoices>{
                   ),
                 ),
               ),
+              IconButton(
+                icon:Icon(Icons.refresh,color: Colors.green,),
+                onPressed: () {
+                  getInvoices();
+                },
+              ),
 
               // Delete Company Button
               ElevatedButton.icon(
@@ -134,7 +140,7 @@ class _InvoicesState extends State<Invoices>{
                   height: MediaQuery.of(context).size.height * 0.9,
                   child: CustomTable(
                     headers: [
-                      // "Invoices_id",
+                     /* // "Invoices_id",
                       // "module_id",
                       "customer_id",
                       "Names",
@@ -147,16 +153,25 @@ class _InvoicesState extends State<Invoices>{
                       // "road",
                       // "email",
                       "phone",
-                      // "position",
+                      // "position",*/
+
+                      'invNo',
+                      'chargedToName',
+                      'status',
+                      'amount',
+                      'dueDate',
+
                     ],
                     formDataList: accounts,
                     onRowSelect: (selectedRow){
 
-                      setState(() {
-                        sideContent = !sideContent;
-                        row = selectedRow;
-                        // CompanySetup(editingRow: row,);
-                      });
+                      controller.addModule("New Invoice", NewInvoice(editingRow: selectedRow,));
+
+                      // setState(() {
+                      //   sideContent = !sideContent;
+                      //   row = selectedRow;
+                      //   // CompanySetup(editingRow: row,);
+                      // });
                       // controller.addModule("Company Setup",CompanySetup(editingRow: selectedRow,));
                     },
                     fixedColumnCount: 2, ),

@@ -1,28 +1,3 @@
-/*
-import 'package:flutter/material.dart';
-
-class Login extends StatefulWidget {
-  const Login({super.key});
-
-  @override
-  State<Login> createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Text('Username'),
-          Text('Password'),
-          Text('Login')
-        ],
-      ),
-    );
-  }
-}
-*/
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -136,15 +111,14 @@ class _LoginState extends State<Login> {
                       final Map<String, dynamic> data = {
                         "userName":"${username}",
                         "password":"${password}",
-                        // "company_id": module['company_id'],
-                        // "user_id":  rowData['user_id']
                       };
 
                       print(data);
 
                       var resu = await auth.getvalues("api/setup/auth/list?userName=${username}&password=${password}");
-                      print(resu);
+                      print('here is the results in logging in${resu}');
                       if(resu.isNotEmpty){
+                        print(resu);
                         var resu2 = await auth.getvalues("api/setup/user/list?user_id=${resu[0]['user_id']}");
                         if(resu2.isNotEmpty){
                           print(resu2.runtimeType);

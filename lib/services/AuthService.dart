@@ -5,7 +5,9 @@ import 'package:http/http.dart';
 class AuthService{
 
   // String url ="http://0.0.0.0:3000";
-  String url ="http://0.0.0.0:8080";
+  String url ="http://localhost:8080";
+  // String url ="http://0.0.0.0:8080";
+  // String url ="http://192.168.1.15:8080";
   // String url ="http://192.168.1.129:8080";
   // String url ="https://106e-41-209-57-162.ngrok-free.app";
 

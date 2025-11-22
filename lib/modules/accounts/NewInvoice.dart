@@ -47,11 +47,16 @@ class _NewInvoiceState extends State<NewInvoice> {
   }
 
   getInvNo()async{
-    var resu = await auth.getvalues("invoiceNo");
-    print("values found customers are ");
-    setState(() {
-      invNo= resu;
-    });
+    if(widget.editingRow != null){
+      invNo = _formData["invNo"];
+    }else {
+      var resu = await auth.getvalues("invoiceNo");
+      print("values found customers are ");
+      setState(() {
+        invNo = resu;
+      });
+    }
+
   }
 
 
@@ -154,10 +159,13 @@ class _NewInvoiceState extends State<NewInvoice> {
 
   }
   getInvlines(existingInvNo)async{
-    var resu = await auth.getvalues("api/finance/invoiceline/list?invoice_No=${existingInvNo}");
-    setState(() {
-      invoiceLines= resu;
-    });
+
+      var resu = await auth.getvalues(
+          "api/finance/invoiceline/list?invoice_No=${existingInvNo}");
+      setState(() {
+        invoiceLines = resu;
+      });
+
   }
 
 
@@ -191,6 +199,8 @@ class _NewInvoiceState extends State<NewInvoice> {
 
     if (widget.editingRow != null) {
       _formData = Map<String, dynamic>.from(widget.editingRow!);
+      invNo = _formData['invNo'];
+      overallTotal = _formData['amount'];
       // getInvlines(_formData['invNo']);
       if (_formData.containsKey('invoicelines')) {
         invoiceLines = List<Map<String, dynamic>>.from(_formData['invoicelines']);
@@ -239,7 +249,7 @@ class _NewInvoiceState extends State<NewInvoice> {
                   children: [
                     Row(
                       children: [
-                        Text('${invNo}'),
+                        // Text('${invNo}'),
                         Container(
                             width: 300,
                             child: buildField("Custom Invoice No", formSchema, _formData)
@@ -264,7 +274,7 @@ class _NewInvoiceState extends State<NewInvoice> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           // mainAxisSize: MainAxisSize.max,
                           children: [
-                            Text('Invoice Lines'),
+                            Text('Invoice Lines ${_formData}'),
                             ElevatedButton.icon(
                               onPressed: () {
                                 print("formdata valuea are $_formData");
@@ -372,17 +382,17 @@ class _NewInvoiceState extends State<NewInvoice> {
                       _formData.putIfAbsent("companyId", () => companyId);
                       print(_formData);
 
-                      var resu = await auth.saveMany(_formData, "/api/finance/invoice/add");
-
-                      if (resu['data']?['success'] == true) {
-                        _formData.clear();
-                        invoiceLines.clear();
-                        _formKey.currentState!.reset();
-                      }
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Invoice saved successfully!')),
-                      );
+                      // var resu = await auth.saveMany(_formData, "/api/finance/invoice/add");
+                      //
+                      // if (resu['data']?['success'] == true) {
+                      //   _formData.clear();
+                      //   invoiceLines.clear();
+                      //   _formKey.currentState!.reset();
+                      // }
+                      //
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(content: Text('Invoice saved successfully!')),
+                      // );
 
                       setState(() {});
 

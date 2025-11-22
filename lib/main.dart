@@ -48,6 +48,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Authentication.dart';
 import 'Wrapper.dart';
 import 'allmodules.dart';
+import 'willdell/templates/template1.dart';
 
 void main() {
   runApp(MyApp());
@@ -163,6 +164,7 @@ class MyApp extends StatelessWidget {
           // home: widtest(),
           // home:Allmodules(),
           home: Wrapper(sessionStateStream: sessionStateStream,),
+          // home: HtmlEditorExample(),
         )
     );
 

@@ -91,6 +91,7 @@ class _ChargesSetupState extends State<ChargesSetup> {
             buildField("Acc Package Name", formSchema, _formData),
             buildField("Description", formSchema, _formData),
             buildField("Posting Acc", formSchema, _formData, postingAcc,['accTitle','grouping'],'coa_id'),
+            buildField("Other Acc", formSchema, _formData, postingAcc,['accTitle','grouping'],'coa_id'),
             buildField("amount", formSchema, _formData,),
             /*Row(
               children: [

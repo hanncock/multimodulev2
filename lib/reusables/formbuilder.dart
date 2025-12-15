@@ -321,7 +321,7 @@ Widget buildField(
       List<dynamic>? dropdata,
       dynamic? labelKey,
       String? valueKey,
-      Function? onUpdate,
+      Function? onUpdateFn,
       TextEditingController? controller, // ← NEW
     ]) {
   final String key = formSchema.keys.first;
@@ -340,14 +340,22 @@ Widget buildField(
   final String jsonKey = field['name'] ?? label;
   final bool isNumeric = type.toLowerCase() == 'int' || type.toLowerCase() == 'number';
 
+
   // --------------------------------------------------------------------------
   // TEXT FIELDS
   // --------------------------------------------------------------------------
   if (['text', 'string', 'email', 'int'].contains(type.toLowerCase())) {
-    final _controller = controller ??
-        TextEditingController(text: formData[jsonKey]?.toString() ?? '');
+    final _controller = controller ?? TextEditingController();
 
-    // Keep formData and controller in sync
+    // Initialize controller text if empty
+    if (_controller.text.isEmpty && formData[jsonKey] != null) {
+      _controller.text = formData[jsonKey].toString();
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+    }
+
+    // Sync controller changes with formData
     _controller.addListener(() {
       formData[jsonKey] = _controller.text;
     });
@@ -362,44 +370,44 @@ Widget buildField(
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),
           const SizedBox(height: 5),
-          TextFormField(
-            controller: _controller,
-            keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-            inputFormatters:
-            isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
-            decoration: InputDecoration(
-              labelText: placeholder.isNotEmpty ? placeholder : label,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide:
-                BorderSide(color: Colors.deepPurple.shade400, width: 1.5),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: Colors.grey, width: 1),
-              ),
-            ),
-            style: const TextStyle(fontSize: 14),
-            validator: required
-                ? (value) {
-              if (value == null || value.isEmpty) {
-                return '$label is required';
-              }
-              if (type == 'email' && !value.contains('@')) {
-                return 'Enter a valid email';
-              }
-              if (isNumeric && int.tryParse(value) == null) {
-                return '$label must be a number';
-              }
-              return null;
-            }
-                : null,
-            onSaved: (value) => formData[jsonKey] = value,
+      TextFormField(
+        controller: _controller, // only this
+        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+        onChanged: (value) {
+          formData[jsonKey] = value;
+          if (onUpdateFn != null) onUpdateFn(value);
+        },
+        inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+        decoration: InputDecoration(
+          labelText: placeholder.isNotEmpty ? placeholder : label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.deepPurple.shade400, width: 1.5),
           ),
-        ],
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: Colors.grey, width: 1),
+          ),
+        ),
+        style: const TextStyle(fontSize: 14),
+        validator: required
+            ? (value) {
+          if (value == null || value.isEmpty) {
+            return '$label is required';
+          }
+          if (type == 'email' && !value.contains('@')) {
+            return 'Enter a valid email';
+          }
+          if (isNumeric && int.tryParse(value) == null) {
+            return '$label must be a number';
+          }
+          return null;
+        }
+            : null,
+        onSaved: (value) => formData[jsonKey] = value,
+      )
+      ],
       ),
     );
   }
@@ -407,7 +415,7 @@ Widget buildField(
   // --------------------------------------------------------------------------
   // DATE / DATETIME FIELDS
   // --------------------------------------------------------------------------
-  if (type == "date" || type == "datetime") {
+  /*if (type == "date" || type == "datetime") {
     bool isExpanded = formData["_show_${jsonKey}"] ?? false;
     DateTime? selectedDate = formData[jsonKey] != null
         ? DateTime.tryParse(formData[jsonKey])
@@ -480,6 +488,102 @@ Widget buildField(
         );
       },
     );
+  }*/
+
+  if (type == "date" || type == "datetime") {
+    bool isExpanded = formData["_show_${jsonKey}"] ?? false;
+
+    // Normalize input: handle int (epoch millis) or String (ISO date)
+    DateTime? selectedDate;
+    var rawValue = formData[jsonKey];
+
+    if (rawValue != null) {
+      if (rawValue is int) {
+        // Epoch millis
+        selectedDate = DateTime.fromMillisecondsSinceEpoch(rawValue);
+      } else if (rawValue is String) {
+        // Try ISO format first
+        selectedDate = DateTime.tryParse(rawValue);
+
+        // If ISO failed, maybe it's epoch stored as string
+        if (selectedDate == null) {
+          final millis = int.tryParse(rawValue);
+          if (millis != null) {
+            selectedDate = DateTime.fromMillisecondsSinceEpoch(millis);
+          }
+        }
+      } else if (rawValue is DateTime) {
+        selectedDate = rawValue;
+      }
+    }
+
+
+    return StatefulBuilder(
+      builder: (context, setInnerState) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "$label",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 12),
+              ),
+              const SizedBox(height: 5),
+              InkWell(
+                onTap: () {
+                  setInnerState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    hintText: placeholder.isNotEmpty
+                        ? placeholder
+                        : "Select date",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    suffixIcon: Icon(
+                      isExpanded ? Icons.arrow_drop_up : Icons.calendar_today,
+                      size: 20,
+                    ),
+                  ),
+                  child: Text(
+                    selectedDate != null
+                        ? "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}"
+                        : "Select a date",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+              if (isExpanded)
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: CalendarDatePicker(
+                    initialDate: selectedDate ?? DateTime.now(),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2035),
+                    onDateChanged: (pickedDate) {
+                      setInnerState(() {
+                        selectedDate = pickedDate;
+                        isExpanded = false;
+
+                        // Store in consistent format: millis
+                        formData[jsonKey] = pickedDate.millisecondsSinceEpoch;
+                      });
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   // --------------------------------------------------------------------------
@@ -524,9 +628,9 @@ Widget buildField(
                 child: Text(display),
               );
             }).toList(),
-            onChanged: (String? value) {
-              formData[jsonKey] = value;
-              if (onUpdate != null) onUpdate(value);
+            onChanged: (value) {
+              formData[jsonKey] = value; // update form data
+              if (onUpdateFn != null) onUpdateFn(value); // call callback
             },
             validator: required
                 ? (value) {

@@ -242,3 +242,24 @@ final currency = NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
 //     return DateFormat(format).format(DateTime.parse(dateTime.validate()));
 //   }
 // }
+
+String formatDate(
+    String? dateTime, {
+      String format = dateFormat1,
+      bool isFromMicrosecondsSinceEpoch = false,
+    }) {
+  // Validate the input dateTime
+  if (dateTime == null || dateTime.isEmpty) {
+    throw ArgumentError('dateTime cannot be null or empty');
+  }
+
+  if (isFromMicrosecondsSinceEpoch) {
+    // Convert microseconds to milliseconds
+    int microseconds = int.parse(dateTime) * 1000;
+    return DateFormat(format).format(
+      DateTime.fromMicrosecondsSinceEpoch(microseconds),
+    );
+  } else {
+    return DateFormat(format).format(DateTime.parse(dateTime));
+  }
+}

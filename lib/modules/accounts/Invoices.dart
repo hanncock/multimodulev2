@@ -156,6 +156,7 @@ class _InvoicesState extends State<Invoices>{
                       // "position",*/
 
                       'invNo',
+                      'custom_inv_No',
                       'chargedToName',
                       'status',
                       'amount',
@@ -163,9 +164,12 @@ class _InvoicesState extends State<Invoices>{
 
                     ],
                     formDataList: accounts,
-                    onRowSelect: (selectedRow){
+                    onRowSelect: (selectedRow)async{
 
-                      controller.addModule("New Invoice", NewInvoice(editingRow: selectedRow,));
+                      var result = await controller.addModule("New Invoice", NewInvoice(editingRow: selectedRow,));
+                      if (result == 'refresh') {
+                        getInvoices(); // 🔁 Call your function to refresh the list
+                      }
 
                       // setState(() {
                       //   sideContent = !sideContent;

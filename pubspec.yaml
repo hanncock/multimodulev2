@@ -41,6 +41,9 @@ dependencies:
 
   html_editor_enhanced: ^2.5.1
 
+  pdf: ^3.10.4
+  printing: ^5.10.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

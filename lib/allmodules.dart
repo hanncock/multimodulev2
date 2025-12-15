@@ -9,6 +9,8 @@ import 'package:multimodule/reusables/keepAlive.dart';
 import 'package:multimodule/reusables/menu.dart';
 import 'package:multimodule/willdell/formtester.dart';
 import 'package:multimodule/willdell/newformtrial.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Authentication.dart';
 import 'modules/accounts/Accnts.dart';
 import 'modules/school/schooldash.dart';
 import 'modules/settings/SettingDash.dart';
@@ -114,16 +116,22 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
 
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(bottom: 12.0),
                     child: Container(
-
                       decoration: BoxDecoration(
-                          color: Color(0xFFA0A7D6),
-
-                          borderRadius: BorderRadius.circular(10)
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 12,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
                       ),
                       constraints: BoxConstraints(
-                        minWidth: 150, // Set your desired minimum width here
+                        minWidth: 150,
                       ),
                       child: IntrinsicHeight(
                         child: Row(
@@ -135,7 +143,7 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
 
                               children: [
 
-                                  /*PopupMenuButton(
+                                /*PopupMenuButton(
                                     icon: Icon(Icons.more_vert_sharp),
 
                                     offset: Offset(0, -70),
@@ -209,7 +217,7 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                                               position: RelativeRect.fromLTRB(
                                                 overlay.size.width - 100, // Adjust position to match your UI
                                                 100, // Adjust this Y position as needed
-                                                0,
+                                                10,
                                                 0,
                                               ),
                                               items: (Userdata[0]['companys'] ?? []).map<PopupMenuEntry>((company) {
@@ -226,16 +234,54 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                                           child: Text('Switch Company'),
                                         ),
                                       ),
+                                      PopupMenuItem(
+                                        child: InkWell(
+                                          onTap: () async{
+                                            print('loggin you out');
+                                            SharedPreferences preferences = await SharedPreferences.getInstance();
+                                            // dynamic alldata = resu2;
+                                            // preferences.setString('userData', jsonEncode(alldata));
+                                            preferences.clear();
+                                            // Navigator.push(context, MaterialPageRoute(builder: (_) =>  Wrapper(sessionStateStream: widget.sessionStateStream,)));
+                                            // Navigator.push(context, MaterialPageRoute(builder: (_) =>  Wrapper(sessionStateStream: null,)));
+                                            // Navigator.push(context, MaterialPageRoute(builder: (_) =>  Login()));
+
+
+                                            // Navigator.pop(context); // Close the first menu before opening the second
+                                            // final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+                                            // showMenu(
+                                            //   context: context,
+                                            //   position: RelativeRect.fromLTRB(
+                                            //     overlay.size.width - 100, // Adjust position to match your UI
+                                            //     100, // Adjust this Y position as needed
+                                            //     0,
+                                            //     0,
+                                            //   ),
+                                            //   items: (Userdata[0]['companys'] ?? []).map<PopupMenuEntry>((company) {
+                                            //     return PopupMenuItem(
+                                            //       child: Text(company['companyName']),
+                                            //       onTap: () {
+                                            //         print('Switching to ${company['companyId']}');
+                                            //         // Handle the switch logic here
+                                            //       },
+                                            //     );
+                                            //   }).toList(),
+                                            // );
+                                          },
+                                          child: Text('Log Out'),
+                                        ),
+                                      ),
                                     ];
                                   },
                                 ),
 
 
                                 Padding(
-                                    padding: const EdgeInsets.symmetric( vertical:  10.0),
-                                    child: VerticalDivider(thickness: 1,),
-                                  ),
-                                  SizedBox(width: 10,),
+                                  padding: const EdgeInsets.symmetric( vertical:  10.0),
+                                  child: VerticalDivider(thickness: 1,),
+                                ),
+                                SizedBox(width: 10,),
 
 
 
@@ -255,26 +301,65 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ...controller.mainModules.keys.map((elmKey)=>InkWell(
-                                      onTap: (){
-
-                                        // print("switching");
-                                        controller.switchTo(elmKey);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            menusListed.indexWhere((ele) => ele.title == elmKey) == -1  ? SvgPicture.asset("assets/icons/dash.svg",color: Colors.brown,) :
-                                            Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset("assets/icons/${menusListed[menusListed.indexWhere((ele) => ele.title == elmKey)].imagePath}.svg"),
-                                                controller.selectedModule == elmKey ? Text('${elmKey}',style: TextStyle(color: Colors.white,fontSize: 10),) : SizedBox(),
-                                              ],
-                                            )
-                                          ],
+                                  ...controller.mainModules.keys.map((elmKey)=>Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: (){
+                                          controller.switchTo(elmKey);
+                                        },
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                                          decoration: BoxDecoration(
+                                            color: controller.selectedModule == elmKey
+                                                ? const Color(0xFF4C42C7).withOpacity(0.1)
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: controller.selectedModule == elmKey
+                                                ? Border.all(color: const Color(0xFF4C42C7).withOpacity(0.3), width: 1)
+                                                : null,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              menusListed.indexWhere((ele) => ele.title == elmKey) == -1
+                                                  ? SvgPicture.asset(
+                                                "assets/icons/dash.svg",
+                                                color: controller.selectedModule == elmKey
+                                                    ? const Color(0xFF4C42C7)
+                                                    : const Color(0xFF757575),
+                                                width: 20,
+                                                height: 20,
+                                              )
+                                                  : Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/icons/${menusListed[menusListed.indexWhere((ele) => ele.title == elmKey)].imagePath}.svg",
+                                                    color: controller.selectedModule == elmKey
+                                                        ? const Color(0xFF4C42C7)
+                                                        : const Color(0xFF757575),
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                                  if (controller.selectedModule == elmKey)
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(top: 2),
+                                                      child: Text(
+                                                        '${elmKey}',
+                                                        style: const TextStyle(
+                                                          color: Color(0xFF4C42C7),
+                                                          fontSize: 9,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       )
                                   )).toList(),
@@ -288,11 +373,22 @@ class _AllmodulesState extends State<Allmodules> with TickerProviderStateMixin{
                               children: [
                                 SizedBox(width: 10,),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric( vertical:  10.0),
-                                  child: VerticalDivider(thickness: 1,),
+                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                  child: VerticalDivider(
+                                    thickness: 1,
+                                    color: const Color(0xFFE0E0E0),
+                                    width: 1,
+                                  ),
                                 ),
-                                SvgPicture.asset("assets/icons/personalcard.svg",color: Colors.black,),
-                                SizedBox(width: 5,),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: SvgPicture.asset(
+                                    "assets/icons/personalcard.svg",
+                                    color: const Color(0xFF424242),
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                ),
                               ],
                             )
 

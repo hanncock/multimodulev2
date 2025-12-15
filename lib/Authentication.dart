@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:local_session_timeout/local_session_timeout.dart';
 import 'package:multimodule/Wrapper.dart';
+import 'package:multimodule/reusables/RoundedContainer.dart';
 import 'package:multimodule/reusables/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,12 +132,29 @@ class _LoginState extends State<Login> {
                           // SharedPreferences sharedPrf = SharedPreferences.getInstance();
                         }
                         print(resu2);
+                      }else{
+                        final snackBar = SnackBar(
+                          content: Text('Wrong Username or Password'),
+                          backgroundColor: Colors.redAccent,
+                          behavior: SnackBarBehavior.floating,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        return;
+                        // SnackBar.
                       }
 
                       // var resu = await auth.
                     },
-                    child: Text('Login'),
-                  )
+                    child: SContainer(
+                      color: primaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('Login'),
+                      ),
+                    ),
+                  ),
+
+
 
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.center,

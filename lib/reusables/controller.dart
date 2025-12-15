@@ -11,7 +11,7 @@ class Controller extends GetxController with GetTickerProviderStateMixin{
   var selectedSubScreen = ''.obs;
   Map <String, Widget> mainModules = {};
 
-  void addModule(String moduleName, Widget module){
+   addModule(String moduleName, Widget module){
 
     if(mainModules.containsKey(moduleName)){
       switchTo(moduleName);

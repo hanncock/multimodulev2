@@ -21,8 +21,10 @@ class AuthService{
 
     var all = '${url}${endpoint}';
     var send = jsonEncode(val);
+    print(send);
     var response = await http.post(Uri.parse(all), body: send, headers: headers);
     var responseData = jsonDecode(response.body);
+    print("returned response is $responseData");
     return responseData;
   }
 
